@@ -391,6 +391,7 @@ WARNING: Propulsion balancing can be very unreliable. YMMV.
 * MainDriveControlType = 2: Control throttle by varying drive fraction. The AI will try to guess
 which thrusters are forward thrusters. It will EXCLUDE any thrusters on spin blocks, so vectored
 thrust continues to operate at full power for greatest possible maneuverability.
+
 Choose whatever works for you. I suggest 0 for most vehicles, but vehicles using vector thrust may want to try 2.
 
     MainDriveControlType = 0
