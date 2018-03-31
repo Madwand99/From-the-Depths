@@ -25,7 +25,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set "AngleBeforeRoll" to 180, so your ship yaws to turn all the time.
 * Set "MaxElevationAngle" to 0 so that your ship won't pitch up or down.
 * To use thrusters to control altitude, set UseAltitudeJets = true.
-* To use helicopter blades to control altitude, set UseSpinnters = true, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
+* To use helicopter blades to control altitude, choose some spinners to set in HeliSpinners, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
 * You may gain some benefit from using smaller values of "PitchDamping". If the default value isn't working, try something like 20. This will make a hovercraft more sensitive to deviations in pitch.
 
 ## BASIC OPTIONS ##
@@ -36,14 +36,14 @@ a negative value to approach targets on the left. Otherwise, always use a positi
 
     AngleBeforeTurn = 10
 
-If the vehicle is at greater than this angle from it's target, it will try to roll towards it.
+If the vehicle is at greater angle than this from it's target, it will try to roll towards it.
 (and stop rolling when AngleBeforeTurn is reached).
 Set this to 180 to NEVER use rolling to turn the vehicle.
 
     AngleBeforeRoll = 30
 
 Outside of this distance, the vehicle will try to close on it's target.
-NOTE: All distances are measured along the ground!
+NOTE: All distances are measured along the ground, in meters.
 
     AttackRunDistance = 600
 
@@ -76,7 +76,7 @@ Also limits yaw when vehicle is rolled on it's side.
 
 ## SPEED CONTROL
 
-This AI has various options for controlling speed during various conditions of it's flight. Speed may either be controlled via an absolute value in meters/second, or a throttle value, which is a 0-1 value expressed as a percentage of the drive's power output.
+This AI has various options for controlling speed during various conditions of it's flight. Speed settings may either be expressed as a value in meters/second, or a throttle value, which is a 0-1 value representing as a percentage of the drives power output.
 
 The minimum speed (in m/s) you want your vehicle to go. If your speed ever goes to less than this (perhaps due to low throttle settings and/or battle damage), the throttle will be temporarily set to maximum until you are above the minimum speed.
 
@@ -104,15 +104,12 @@ A list of subconstruct ID's for the individual spinners you want to use for alti
 
     HeliSpinners = {}
 
-The helicopter blade speed to use when lowering altitude. Ranges between -30 to 30.
+The helicopter blade speeds to use for controlling altitude. These should range between -30 to 30.
 Use AltitudeClamp to control how smoothly these speeds are transitioned between
 as your helicopter approaches it's target altitude.
 
-    MinHelicopterBladeSpeed = 10
-
-The helicopter blade speed to use when gaining altitude. Ranges between -30 to 30.
-
-    MaxHelicopterBladeSpeed = 30
+    MinHelicopterBladeSpeed = 10 -- when lowering altitude
+    MaxHelicopterBladeSpeed = 30 -- when gaining altitude
 
 
 ## TERRAIN AVOIDANCE OPTIONS
@@ -125,7 +122,7 @@ The minimum relative altitude a vehicle will maintain above terrain. Higher prio
 
     MinAltitude = 50
 
-The maximum sea-level altitude the vehicle will attempt.
+The maximum altitude above sea-level the vehicle will attempt.
 
     MaxAltitude = 400
 
@@ -139,7 +136,7 @@ Cap vehicle throttle at this value when a possible collision is sensed.
     MaxTerrainThrottle = 1
 
 Use the advanced steering system to avoid difficult terrain by flying around, instead of over. Not guaranteed to work as this weight governs a priority that must be balanced with other steering priorities the vehicle may have, but sometimes helps to avoid difficult mountains.
-If positive, this weight will examine 8 compass directions around the vehicle at distances determined by velocity and TerrainLookahead, and if there is a danger of collision (as determined by the "MinAltitude" setting),
+If positive, this weight will examine 8 compass directions around the vehicle at distances determined by velocity and TerrainLookahead, and if the terrain is judged to be too high,
 will attempt to angle the aircraft away from the terrain.
 It will still attempt to avoid terrain by gaining altitude if needed.
 
@@ -163,7 +160,8 @@ After water start has been triggered, will disable movement until this altitude 
 ## COLLISION AVOIDANCE OPTIONS
 
 Collision detection and avoidance tries to detect and avoid possible collisions with other vehicles using the advanced
-steering system.
+steering system. The AI will always focus on avoiding the most imminent collision threat.
+
 The "CollisionTThreshold" parameter is how distant in time (in seconds)
 a potential collision will be considered dangerous -- the less maneuverable your vehicle, the higher you may want to set this.
 Set to 0 if you don't care about collisions.
@@ -182,7 +180,7 @@ We don't have any way to know the size of an enemy in Lua, so you can estimate i
 
     EnemyRadius = 50
 
-Use the advanced steering system to avoid collisions with friendly vehicles. Can be expensive if you have many friendly vehicles in play.
+Use the advanced steering system to avoid collisions with friendly vehicles. Can be expensive to calculate if you have many friendly vehicles in play.
 
     AvoidFriendlies = true
 
@@ -190,7 +188,7 @@ Avoid collisions with your target. Set to "false" if you have a melee vehicle.
 
     AvoidTarget = true
 
-Avoid collisions with other enemies. Can be expensive if there are many enemy vehicles in play.
+Avoid collisions with other enemies. Can be expensive to calculate if there are many enemy vehicles in play.
 
     AvoidOtherEnemies = true
 
@@ -206,8 +204,10 @@ This system allows the vehicle designer to set different weights, or priorities,
 * [Steering Behaviors For Autonomous Characters](http://www.red3d.com/cwr/steer/gdc99/)
 * [Boids](http://www.red3d.com/cwr/boids/)
 
+Note that weights are relative. That means arbitrarily increasing a weight may not do what you expect: a two weights at 1 and 2 have the same relative importance as the same weights at 100 and 200.
+
 Flocking is an advanced behavior that allows formation-like flying and collision avoidance with friendly vehicles in the "flock".
-Start using flocking by setting "NeighborRadius" to a positive number (try 300, for example). This will tell your vehicle to "notice" other freindly vehicles within this radius and form a flock with them.
+Start using flocking by setting "NeighborRadius" to a positive number (try 300, for example). This will tell your vehicle to "notice" other friendly vehicles within this radius and form a flock with them.
 
     NeighborRadius = 0  -- in meters
 
@@ -215,7 +215,7 @@ For alignment and cohesion, ignore craft that are going below this speed (in m/s
 
     IgnoreBelowSpeed = 0
 
-Set FlockWithBlueprintNames = 'all' to use alignment and cohesion with all friendly craft
+Set FlockWithBlueprintNames = 'all' to use alignment and cohesion with all friendly craft.
 Enclose a comma-delimited list of vehicle names in curly braces {} to use alignment and cohesion
 with only craft with those names. Names given will match with any vehicle that starts with that
 combination of letters, for example {'Rapier'} will match with any vehicle named
@@ -223,7 +223,7 @@ combination of letters, for example {'Rapier'} will match with any vehicle named
 
     FlockWithBlueprintNames = 'all'  -- or, for example {'Rapier', 'Cutlass'}, etc.
 
-The weight given to alignment, or the desire to match headings with friendly craft. Usually 1 or 0 to turn this on or off, but other values are fine too and will change steering priorities accordingly.
+The weight given to alignment, or the desire to match headings with friendly craft. Usually 1 or 0 to turn this on or off respectively, but other values are fine too and will change steering priorities accordingly.
 
     AlignmentWeight = 1
 
@@ -231,11 +231,11 @@ The weight given to cohesion, or the desire to come closer to friendly craft.
 
     CohesionWeight = 1
 
-The weight given to separation, or the desire to avoid coming too close to vehicles.
+The weight given to separation, or the desire to avoid coming too close to other friendly vehicles.
 
     SeparationWeight = 1
 
-A cohesion weight for injured vehicles. May be useful for "medic ships"
+A cohesion weight for injured vehicles. May be useful for "medic ships".
 
     InjuredWeight = 0
 
@@ -258,7 +258,7 @@ If set to "false", will use CruiseAltitude during combat.
 
 Range within which to attempt altitude matching. Beyond this range, uses CruiseAltitude.
 
-    MatchAltitudeRange = 300
+    MatchAltitudeRange = 1000
 
 Altitude in meters above (or below, if negative) the target the vehicle will attempt to attain.
 Altitude will still be constrained by "MinAltitude" and "MaxAltitude" terrain avoidance constraints.
@@ -269,7 +269,7 @@ The minimum altitude the aircraft will go to when matching altitude
 
     MinMatchingAltitude = 100
 
-Use vehicle roll to try to "broadside" a target. This is very different to a naval broadside (which uses yaw). This is intended for vehicles which have weapons that don't have good elevation control. Set "BroadsideWithin" to a positive number to start broadsiding when the target is within a certain range -- usually this is similar to the effective range of your weapon. "BroadsideAngle" then controls the roll angle relative to the target you want your vehicle to take. "0" means you want either side of your vehicle pointed at the enemy. "90" means the bottom of your vehicle, "-90" the top. Roll angles will respect the "MaxRollAngle" setting, in the advanced options.
+Use vehicle roll to try to "broadside" a target. This is very different to a naval broadside (which uses yaw). This is intended for vehicles which have weapons that don't have good elevation control. Set "BroadsideWithin" to a positive number to start broadsiding when the target is within a certain range -- usually would set to the effective range of your weapons. "BroadsideAngle" then controls the roll angle relative to the target you want your vehicle to take. "0" means you want either side of your vehicle pointed at the enemy. "90" means the bottom of your vehicle, "-90" the top. Roll angles will respect the "MaxRollAngle" setting, in the advanced options.
 
     BroadsideWithin=0  -- in meters
     BroadsideAngle=0
@@ -296,7 +296,7 @@ The speed (in m/s) your ship is usually able to go when dodging missiles.
 
     NormalSpeed = 100
 
-The weight (or priority) to give dodging missiles for the advanced steering system. This is on a *per missile* basis, so a large missile barrage is considered very high-priority. Also, the nearer to impact a missile is, the more importance it is given. "0" will ignore missiles, larger values will give running away increasingly high priority (2 works fine in my tests).
+The weight (or priority) to give dodging missiles for the advanced steering system. This is on a *per missile* basis, so a large missile barrage is considered very high-priority in total. Also, the closer to impact a missile is, the more importance it is given. "0" will ignore missiles, larger values will give running away increasingly high priority (2 works fine in my tests, though you may want it higher if even one missile is dangerous to your vehicle).
 
     DodgingWeight = 2
 
@@ -326,7 +326,7 @@ These are roughly similar to the parameters of a PID-controller.
 
 ## VTOL/HOVER OPTIONS
 
-While not yet as extensive as the hover options afforded by some other scripts, this AI does allow for control of hover jets to control altitude, as well as VTOL takeoff at low altitudes (i.e. decks of carriers and the like).
+While not yet as extensive as the hover options afforded by some other scripts, this AI does allow for control of hover jets to control altitude, as well as VTOL takeoff at low speeds (i.e. decks of carriers and the like).
 
 Use jets pointing up or down to assist in controlling altitude. 
 
@@ -339,7 +339,7 @@ Set "UseVTOLBeneathSpeed" to a large number to use VTOL all the time
     UseVTOLBeneathSpeed = 0
 
 A list of engine indices to use for VTOL. Set to 'all' to use all downward-pointing engines.
-Use a list format, i.e. {0,1,2,3} to specify exact engine indices. Engines may be attached to
+Use a list format, i.e. {0,1,2,3} to specify exact engine indices -- generally engines are numbered in the order you place them on the vehicle. Engines may be attached to
 spin blocks for use with vector thrust, and will be rotated backwards for normal use when "UseVTOLBeneathSpeed"
 is exceeded. If engines are on spin blocks, you must specify their indices if the AI is to
 control their drive fraction.
@@ -351,7 +351,7 @@ power you want to use on that engine.
     VTOLEngines = nil
 
 The set of VTOL spinners to use when in VTOL mode. Set to 'all' to select all spinners capable of
-pointing downwards. Otherwise, choose a list of spinners ub-construct indices like: {0,1,2,3}.
+pointing downwards. Otherwise, choose a list of spinner sub-construct indices like: {0,1,2,3}.
 VTOL spinners will angle downwards at their given MaxVTAngle when in VTOL mode, otherwise
 they will point backwards and operate as normal vectored thrust.
 Also see the "ExcludeSpinners" setting to specify a list of spinners to exclude, if this is set to 'all'.
@@ -367,15 +367,12 @@ These are options most users shouldn't need to change.
 
     MODE = 2
 
-This AI automatically clamps "MaxPitch" and "MinPitch" according to how near the aircraft is to it's target
-altitude to prevent overshooting when changing altitude. Higher values of
-"AltitudeClamp" decrease this effect, allowing steeper changes in altitude. Lower values help prevent overshooting.
-AltitudeClamp also controls how gradually airships approach thier target altitude when using altitude jets.
+This AI automatically clamps "MaxPitch" and "MinPitch" according to how near the aircraft is to it's target altitude to prevent overshooting when changing altitude. Higher values of "AltitudeClamp" decrease this effect, allowing steeper changes in altitude. Lower values help prevent overshooting. AltitudeClamp also controls how gradually airships approach their target altitude when using altitude jets or helicopter blades.
 
     AltitudeClamp = .2
 
 Damping parameters to mitigate wobbling in high-performance vehicles. Higher values can help
-control wobbling, lower values allow faster turns but may overshoot and cause wobble more often.
+control wobbling, lower values allow more responsive controls but may overshoot and cause wobble more often.
 
     PitchDamping = 90
     YawDamping = 90
@@ -387,13 +384,14 @@ You may want to set "AngleBeforeTurn" to 180 if you do this, so you never yaw.
     DefaultRollAngle = 0
 
 There are three kinds of ways this AI can use to control forward speed (i.e., main drive):
-* MainDriveControlType = 0: Uses standard throttle control. Most ships will want this option.
+* MainDriveControlType = 0: Uses standard throttle control. Most vehicles will want this option.
 * MainDriveControlType = 1: Use forward (only) propulsion balancing. This may help to compensate
 for damage to thrusters, or unbalanced thruster placement compared to the center of mass.
 WARNING: Propulsion balancing can be very unreliable. YMMV.
 * MainDriveControlType = 2: Control throttle by varying drive fraction. The AI will try to guess
 which thrusters are forward thrusters. It will EXCLUDE any thrusters on spin blocks, so vectored
 thrust continues to operate at full power for greatest possible maneuverability.
+
 
     MainDriveControlType = 0
 
