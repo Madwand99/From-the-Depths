@@ -8,6 +8,8 @@ so I can add them back into the code.
 
 Latest version and documentation is available at:
 https://github.com/Madwand99/From-the-Depths/tree/master/Advanced%20Aerial%20AI
+Forum thread to go for help:
+http://www.fromthedepthsgame.com/forum/showthread.php?tid=9108
 --]]
 
 -- BASIC OPTIONS
