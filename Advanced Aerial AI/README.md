@@ -7,6 +7,8 @@ This AI also includes built-in water start AI, collision avoidance AI, "dogfight
 Put a Lua box down somewhere on your vehicle (it's in the "Control" tab of the build menu). Use "Q" on the Lua box. Copy-and-paste (Ctrl-A,Ctrl-C) the Lua code there into the big edit box in the Lua box. Read the documentation, below. Choose appropriate AI settings for your vehicle. Click "Apply" to save the code and new settings. Watch how your vehicle behaves and continue to tweak the AI settings as desired until you get the behavior you want.
 Note that when you paste this code in, you will only see a bit less than 500 lines of code because that's how many the Lua box can display. However, all the code should be there.
 
+The AI mainframe must be set to "On" for this AI to be enabled. Any other setting will allow the normal AI behaviors (allowing, for example, patrol mode to work).
+
 #### To use this AI for orbiters:
 
 An "orbiter" is a vehicle that continually circles their target instead of making strafing runs. To do this, set "AngleBeforeTurn" to a larger value, usually between 40-90 degrees depending on your vehicles maneuverability. The smaller the number, the tighter the orbit, and the more maneuverable your vehicle will need to be. Most orbiters use only yawing to turn, so you will also usually need to set "AngleBeforeRoll" to 180 so your vehicle won't try to roll.
@@ -16,7 +18,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set "AngleBeforeRoll" to 180, so your ship yaws to turn all the time.
 * Set "CruiseAltitude" to the typical altitude of your vehicle. This isn't strictly necessary to do but it helps the AI not be confused.
 * Set "DeployAlt" to some large negative value so it won't try to do a water start and thus turn off the engines.
-* Set "Mode" to 0 or 1 for water/land mode controls respectively.
+* Set "DriveMode" to 0 or 1 for water/land mode controls respectively.
 * You will probably want to make your vehicle an orbiter (see above) so it won't try to strafe the enemy and collide with them.
 * Set other parameters as desired to control the behavior of the ship. Good luck!
 
@@ -28,7 +30,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * To use helicopter blades to control altitude, choose some spinners to set in HeliSpinners, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
 * You may gain some benefit from using smaller values of "PitchDamping". If the default value isn't working, try something like 20. This will make a hovercraft more sensitive to deviations in pitch.
 
-## BASIC OPTIONS ##
+## BASIC OPTIONS
 When the vehicle is within "AngleBeforeRoll" degrees of its target, it will try to yaw towards
 (or away!) from its target such that its nose is pointed "AngleBeforeTurn" degrees away from it.
 If UsePreferredSide = true, use a positive value of AngleBeforeTurn to approach targets on the right,
@@ -269,7 +271,7 @@ The minimum altitude the aircraft will go to when matching altitude
 
     MinMatchingAltitude = 100
 
-Use vehicle roll to try to "broadside" a target. This is very different to a naval broadside (which uses yaw). This is intended for vehicles which have weapons that don't have good elevation control. Set "BroadsideWithin" to a positive number to start broadsiding when the target is within a certain range -- usually would set to the effective range of your weapons. "BroadsideAngle" then controls the roll angle relative to the target you want your vehicle to take. "0" means you want either side of your vehicle pointed at the enemy. "90" means the bottom of your vehicle, "-90" the top. Roll angles will respect the "MaxRollAngle" setting, in the advanced options.
+Use vehicle roll to try to "broadside" a target. This is very different to a naval broadside (which uses yaw). This is intended for vehicles which have weapons that don't have good elevation control. Set "BroadsideWithin" to a positive number to start broadsiding when the target is within a certain range -- usually would set to the effective range of your weapons. "BroadsideAngle" then controls the roll angle relative to the target you want your vehicle to take. "0" means you want either side of your vehicle pointed at the enemy. "90" means the bottom of your vehicle, "-90" the top. Roll angles will respect the "MaxRollAngle" setting, in the advanced options. The AI will not attempt to broadside while performing a roll to turn, so this option may work best for vehicles that only yaw to turn.
 
     BroadsideWithin=0  -- in meters
     BroadsideAngle=0
@@ -322,7 +324,7 @@ a decision to move a particular direction and how powerfully the spinner angles 
 These are roughly similar to the parameters of a PID-controller.
 
     VTProportional = {1,1,1} 
-    VTDelta = {1/12,1/12,0}
+    VTDelta = {.1,.1,0}
 
 ## VTOL/HOVER OPTIONS
 
@@ -365,7 +367,13 @@ These are options most users shouldn't need to change.
 
 0 for water mode, 1 for land mode, 2 for air mode. You can try it for non-aircraft, but YMMV.
 
-    MODE = 2
+    DriveMode = 2
+
+How often to recalculate heading and altitude. At 1, these will recalculate every update. At 10,
+they will recalculate every 10th update. The lower UpdateRate is, the more
+responsive the vehicle will be, but it will also take more processing time. Thus higher values may increase FPS.
+
+    UpdateRate = 1
 
 This AI automatically clamps "MaxPitch" and "MinPitch" according to how near the aircraft is to it's target altitude to prevent overshooting when changing altitude. Higher values of "AltitudeClamp" decrease this effect, allowing steeper changes in altitude. Lower values help prevent overshooting. AltitudeClamp also controls how gradually airships approach their target altitude when using altitude jets or helicopter blades.
 
@@ -392,7 +400,7 @@ WARNING: Propulsion balancing can be very unreliable. YMMV.
 which thrusters are forward thrusters. It will EXCLUDE any thrusters on spin blocks, so vectored
 thrust continues to operate at full power for greatest possible maneuverability.
 
-Choose whatever works for you. I suggest 0 for most vehicles, but vehicles using vector thrust may want to try 2.
+Choose whatever works for you. I suggest 0 for most vehicles, but vehicles using vector thrust may want to try 2. This decision only matters if Thottle values you choose aren't always 1.
 
     MainDriveControlType = 0
 
@@ -428,7 +436,7 @@ AltitudeOffset is useful when you wish to create multiple vehicles of the same t
 don't want to individually set all the various altitude settings so they won't crash into each
 other. This value adjusts CruiseAltitude, MaxAltitude, MatchAltitudeOffset, and MinMatchingAltitude
 simultaneously. You can also give it two table values, e.g. {0,100}. This will randomly generate
-an offset in the range between 0-100, so your aircraft may be less likely to collide with other's of it's kind.
+an offset in the range between 0-100, so your aircraft may be less likely to collide with others of it's kind.
 
     AltitudeOffset = 0
 
@@ -436,12 +444,12 @@ AngleOfEscape is the angle relative to the enemy that is set when going from "at
 It is set once when entering escape mode, and does not adjust to enemy movements.
 By default, it is set to AngleBeforeTurn (and follows the same rules). You can set it to anything
 you like though, for example "AngleOfEscape = 90" will turn off at 90 degrees, or
-"AngleOfEscape = 180" will have the vehicle try to turn around.
+"AngleOfEscape = 180" will have the vehicle try to turn around. Note that if the steering system has other priorities, this escape angle is likely to be ignored.
 
-    AngleOfEscape = AngleBeforeTurn
+    AngleOfEscape = 0
 
 An additional option for helicopters, vector thrust, and VTOL, ExcludeSpinners allows you
-to specify spinner indices to be excluded from use by this AI (if you use the 'all' option
+to specify spinner sub-construct indices to be excluded from use by this AI (if you use the 'all' option
 for VTSpinners or VTOLSpinners). If used, this must be a comma-delimited list surrounded
 by curly braces, for example "ExcludeSpinners = {0,5}"
 
