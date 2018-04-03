@@ -458,3 +458,8 @@ by curly braces, for example "ExcludeSpinners = {0,5}"
 Whether to orbit the spawn point when there are no enemies, or just fly off in a straight line
 
     OrbitSpawn = true
+
+## Useful links
+
+* [From the Depths on Steam](http://store.steampowered.com/app/268650/From_the_Depths/)
+* [Forum thread for this AI where you can go for help.](http://www.fromthedepthsgame.com/forum/showthread.php?tid=9108) Note: if your issue is "my plane doesn't fly", make sure it DOES fly with the normal aerial AI -- this AI can't overcome bad design, though it can help in some cases. Exception: vector thrust. Normal AI can't do that (without a lot of ACBs anyway). This code is not magic and can't make a plane fly that couldn't otherwise. 
