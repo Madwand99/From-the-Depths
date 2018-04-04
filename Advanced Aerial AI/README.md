@@ -30,6 +30,14 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * To use helicopter blades to control altitude, choose some spinners to set in HeliSpinners, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
 * You may gain some benefit from using smaller values of "PitchDamping". If the default value isn't working, try something like 20. This will make a hovercraft more sensitive to deviations in pitch.
 
+#### How to improve FPS
+
+This AI does a lot of "thinking", potentially considering information about every vehicle and enemy missile in play, many times per second. Under some conditions this can make the AI slow to run, reducing FPS -- particularly this can occur in "swarm builds" in which many copies of this AI are operating in parallel. There are several options which can be used to mitigate this problem:
+
+* Turn off missile avoidance (set WarningMainframe = -1) if your vehicle doesn't need it.
+* Turn off collision detection if you don't think it will be helpful (set "AvoidFriendlies" and/or "AvoidOtherEnemies" to false as appropriate).
+* Finally, and perhaps most importantly, increase UpdateRate to 2 or more. This will do the most to help, but it will slightly reduce the responsiveness of your vehicle. Your vehicle will still fly, but it won't update it's desired heading or altitude as often.
+
 ## BASIC OPTIONS
 When the vehicle is within "AngleBeforeRoll" degrees of its target, it will try to yaw towards
 (or away!) from its target such that its nose is pointed "AngleBeforeTurn" degrees away from it.
