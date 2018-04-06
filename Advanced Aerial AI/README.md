@@ -285,8 +285,8 @@ The minimum altitude the aircraft will go to when matching altitude
 
 Use vehicle roll to try to "broadside" a target. This is very different to a naval broadside (which uses yaw). This is intended for vehicles which have weapons that don't have good elevation control. Set "BroadsideWithin" to a positive number to start broadsiding when the target is within a certain range -- usually would set to the effective range of your weapons. "BroadsideAngle" then controls the roll angle relative to the target you want your vehicle to take. "0" means you want either side of your vehicle pointed at the enemy. "90" means the bottom of your vehicle, "-90" the top. Roll angles will respect the "MaxRollAngle" setting, in the advanced options. The AI will not attempt to broadside while performing a roll to turn, so this option may work best for vehicles that only yaw to turn.
 
-    BroadsideWithin=0  -- in meters
-    BroadsideAngle=0
+    BroadsideWithin = 0  -- in meters
+    BroadsideAngle = 0
 
 ## MISSILE AVOIDANCE OPTIONS
 
@@ -385,9 +385,10 @@ These are options most users shouldn't need to change.
 
     DriveMode = 2
 
-How often to recalculate heading and altitude. At 1, these will recalculate every update. At 10,
+How often to recalculate heading and altitude. At 1 (the minimum), these will recalculate every update. At 10,
 they will recalculate every 10th update. The lower UpdateRate is, the more
 responsive the vehicle will be, but it will also take more processing time. Thus higher values may increase FPS.
+See more information in [How to improve FPS](https://github.com/Madwand99/From-the-Depths/tree/master/Advanced%20Aerial%20AI#how-to-improve-fps).
 
     UpdateRate = 1
 
@@ -458,7 +459,7 @@ an offset in the range between 0-100, so your aircraft may be less likely to col
 
 AngleOfEscape is the angle relative to the enemy that is set when going from "attack mode" to "escape mode".
 It is set once when entering escape mode, and does not adjust to enemy movements.
-By default, it is set to AngleBeforeTurn (and follows the same rules). You can set it to anything
+By default, it is set to 0, which means to keep flying in the original direction. You can set it to anything
 you like though, for example "AngleOfEscape = 90" will turn off at 90 degrees, or
 "AngleOfEscape = 180" will have the vehicle try to turn around. Note that if the steering system has other priorities, this escape angle is likely to be ignored.
 
