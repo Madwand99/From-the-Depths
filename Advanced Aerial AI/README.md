@@ -114,7 +114,7 @@ A list of subconstruct ID's for the individual spinners you want to use for alti
 
     HeliSpinners = {}
 
-A list of ID's for the individual dediblades you want to use for altitude control on a helicopter. Use 'all' if you want to use all spinners. Right now you'll have to guess a bit to test the index; they are usually numbered from 0 starting from the first dediblade you place on the hull.
+A list of ID's for the individual dediblades you want to use for altitude control on a helicopter. Use 'all' if you want to use all dediblades. Right now you'll have to guess a bit to test the index; they are usually numbered from 0 starting from the first dediblade you place on the hull.
 
     HeliDediblades = {}
 
