@@ -27,7 +27,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set "AngleBeforeRoll" to 180, so your ship yaws to turn all the time.
 * Set "MaxElevationAngle" to 0 so that your ship won't pitch up or down.
 * To use thrusters to control altitude, set UseAltitudeJets = true.
-* To use helicopter blades to control altitude, choose some spinners to set in HeliSpinners, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
+* To use helicopter blades to control altitude, choose some spinners to set in HeliSpinners and/or some dediblades to set in HeliDediblades, or set either of these options to 'all', and set min and max helicopter blade speeds to an appropriate value for your helicopter.
 * You may gain some benefit from using smaller values of "PitchDamping". If the default value isn't working, try something like 20. This will make a hovercraft more sensitive to deviations in pitch.
 
 #### How to improve FPS
