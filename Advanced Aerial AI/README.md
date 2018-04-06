@@ -110,9 +110,13 @@ Throttle we'll use when engaged with enemies.
 
 ## HELICOPTER OPTIONS
 
-A list of subconstruct ID's for the individual spinners you want to use for altitude control on a helicopter.
+A list of subconstruct ID's for the individual spinners you want to use for altitude control on a helicopter. Use 'all' if you want to use all spinners. These do NOT include Dediblades; use the next setting for that.
 
     HeliSpinners = {}
+
+A list of ID's for the individual dediblades you want to use for altitude control on a helicopter. Use 'all' if you want to use all spinners. Right now you'll have to guess a bit to test the index; they are usually numbered from 0 starting from the first dediblade you place on the hull.
+
+    HeliDediblades = {}
 
 The helicopter blade speeds to use for controlling altitude. These should range between -30 to 30.
 Use AltitudeClamp to control how smoothly these speeds are transitioned between
@@ -334,6 +338,10 @@ These are roughly similar to the parameters of a PID-controller.
     VTProportional = {1,1,1} 
     VTDelta = {.1,.1,0}
 
+The maximum speed at which vector thrust spinners change direction. Ranges between 1 and 30. You will want this at 30 for best vehicle performance but may want to set it lower for the sake of smoother visual changes.
+
+    VTSpeed = 30
+
 ## VTOL/HOVER OPTIONS
 
 While not yet as extensive as the hover options afforded by some other scripts, this AI does allow for control of hover jets to control altitude, as well as VTOL takeoff at low speeds (i.e. decks of carriers and the like).
@@ -459,7 +467,8 @@ you like though, for example "AngleOfEscape = 90" will turn off at 90 degrees, o
 An additional option for helicopters, vector thrust, and VTOL, ExcludeSpinners allows you
 to specify spinner sub-construct indices to be excluded from use by this AI (if you use the 'all' option
 for VTSpinners or VTOLSpinners). If used, this must be a comma-delimited list surrounded
-by curly braces, for example "ExcludeSpinners = {0,5}"
+by curly braces, for example "ExcludeSpinners = {0,5}". Note that HeliSpinners are automatically excluded
+from use by vector thrust if they are specified.
 
     ExcludeSpinners = nil
 

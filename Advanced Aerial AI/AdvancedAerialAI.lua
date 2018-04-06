@@ -1,6 +1,6 @@
 --[[
-Advanced aerial AI, version 5
-Created by Madwand 4/03/2018
+Advanced aerial AI, version 5.1
+Created by Madwand 4/05/2018
 Use and modify this code however you like, however please credit me
 if you use this AI or a derivative of it in a tournament, or you publish a blueprint
 using it. Also let me know if you make any significant improvements,
@@ -35,6 +35,7 @@ ClosingThrottle = 1
 
 -- HELICOPTER OPTIONS
 HeliSpinners = {}
+HeliDediblades = {}
 MinHelicopterBladeSpeed = 10
 MaxHelicopterBladeSpeed = 30
 
@@ -92,6 +93,7 @@ VTSpinners = nil
 MaxVTAngle = {40,40,40,90} -- yaw, roll, pitch, VTOL
 VTProportional = {1,1,1}
 VTDelta = {.1,.1,0}
+VTSpeed = 30
 
 --VTOL/HOVER OPTIONS
 UseAltitudeJets = false
@@ -239,10 +241,11 @@ function ControlVTOLPower(I)
 end
 
 function AdjustHelicopterBlades(I,AltPower)
-  if table.getn(HeliSpinners)==0 then return end
+  if table.getn(HeliSpinners)+table.getn(HeliDediblades)==0 then return end
   local MidSpeed = (MaxHelicopterBladeSpeed-MinHelicopterBladeSpeed)/2
   local SpinSpeed = MinHelicopterBladeSpeed+MidSpeed+AltPower*MidSpeed
   for k,v in pairs(HeliSpinners) do I:SetSpinBlockContinuousSpeed(v, SpinSpeed) end
+  for k,v in pairs(HeliDediblades) do I:SetDedibladeContinuousSpeed(v, SpinSpeed) end
 end
 
 -- Get the current stats about angles of the vehicle
@@ -576,8 +579,8 @@ end
 function RotateSpinnersTo(I, Spinners)
   for Spinner, NewAngle in pairs(Spinners) do
     local Angle = EulerAngles(Quaternion.Inverse(SpinnerStartRotations[Spinner]) * I:GetSubConstructInfo(Spinner).LocalRotation)
-    local DeflectAngle = limiter(limiter(NewAngle,90)-Angle,43)
-    if math.abs(DeflectAngle)<2 then DeflectAngle=0 end
+    local DeflectAngle = limiter(limiter(NewAngle,90)-Angle,VTSpeed*43/30)
+    if math.abs(DeflectAngle)<1 then DeflectAngle=0 end
     I:SetSpinBlockContinuousSpeed(Spinner,DeflectAngle*30/43)
   end
 end
@@ -899,8 +902,23 @@ function Initialize(I)
   if ExcludeSpinners then
     for k, p in pairs(ExcludeSpinners) do ExcludedSpinners[p]=true end
   end
-  if HeliSpinners then
+
+  if HeliSpinners=='all' then
+    HeliSpinners={}
+    for k,p in pairs(I:GetAllSubConstructs()) do
+      if I:IsSpinBlock(p) then
+        table.insert(HeliSpinners, p)
+      end
+    end
+  elseif HeliSpinners then
     for k, p in pairs(HeliSpinners) do ExcludedSpinners[p]=true end
+  end
+
+  if HeliDediblades=='all' then
+    HeliDediblades={}
+    for p = 0, I:GetDedibladeCount() - 1 do
+       table.insert(HeliDediblades, p)
+    end
   end
 
   if VTSpinners=='all' then
