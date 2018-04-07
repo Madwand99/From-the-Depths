@@ -315,7 +315,7 @@ then WarningMainframe = 0.
 
 If missiles are within this time-to-target threshold, vehicle will try to run away from them.
 
-    RunAwayTTT = 4
+    RunAwayTTT = 4  -- in seconds
 
 You shouldn't need to mess with this. Helps decide when a missile might be dangerous.
 
