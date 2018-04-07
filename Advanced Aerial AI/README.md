@@ -38,6 +38,13 @@ This AI does a lot of "thinking", potentially considering information about ever
 * Turn off collision detection if you don't think it will be helpful (set "AvoidFriendlies" and/or "AvoidOtherEnemies" to false as appropriate).
 * Finally, and perhaps most importantly, increase UpdateRate to 2 or more. This will do the most to help, but it will slightly reduce the responsiveness of your vehicle. Your vehicle will still fly, but it won't update it's desired heading or altitude as often.
 
+#### Where to find SubConstruct IDs
+
+SubConstruct IDs are needed for the HeliSpinners, VTSpinners, VTOLSpinners, and ExcludeSpinners options.
+These IDs are attached to spinner blocks. You can find them in the lower-left hand corner of the Spinner GUI, as follows:
+
+![SubConstruct IDs](https://imgur.com/P3bf6XT)
+
 ## BASIC OPTIONS
 When the vehicle is within "AngleBeforeRoll" degrees of its target, it will try to yaw towards
 (or away!) from its target such that its nose is pointed "AngleBeforeTurn" degrees away from it.
@@ -220,6 +227,8 @@ This system allows the vehicle designer to set different weights, or priorities,
 
 Note that weights are relative. That means arbitrarily increasing a weight may not do what you expect: a two weights at 1 and 2 have the same relative importance as the same weights at 100 and 200.
 
+![2 Cutlass's using flocking to maintain formation](https://imgur.com/iNHJDhO)
+
 Flocking is an advanced behavior that allows formation-like flying and collision avoidance with friendly vehicles in the "flock".
 Start using flocking by setting "NeighborRadius" to a positive number (try 300, for example). This will tell your vehicle to "notice" other friendly vehicles within this radius and form a flock with them.
 
@@ -317,7 +326,11 @@ The weight (or priority) to give dodging missiles for the advanced steering syst
 ## VECTOR THRUST OPTIONS
 
 Vector thrust means placing jets on spin blocks, potentially allowing much more powerful yaw, pitch,
-or roll authority on a vehicle. Turn this option on by specifying a number of sub-construct IDs
+or roll authority on a vehicle:
+
+![Cutlass vector thrust demo](https://imgur.com/5ieUbRY)
+
+Turn this option on by specifying a number of SubConstruct IDs
 to use with VTSpinners. Use VTSpinners = 'all' to use all spinners, or supply a comma-delimited
 list like this: {0,1,2}. Spinners placed vertically are for yaw. Spinners placed horizontally
 control roll and pitch (so I suggest placing them farther to the left and right of your CoM).
@@ -368,8 +381,8 @@ power you want to use on that engine.
 
     VTOLEngines = nil
 
-The set of VTOL spinners to use when in VTOL mode. Set to 'all' to select all spinners capable of
-pointing downwards. Otherwise, choose a list of spinner sub-construct indices like: {0,1,2,3}.
+The set of VTOL SubConstruct spinner IDs to use when in VTOL mode. Set to 'all' to select all spinners capable of
+pointing downwards. Otherwise, choose a list of spinner SubConstruct IDs as follows: {0,1,2,3}.
 VTOL spinners will angle downwards at their given MaxVTAngle when in VTOL mode, otherwise
 they will point backwards and operate as normal vectored thrust.
 Also see the "ExcludeSpinners" setting to specify a list of spinners to exclude, if this is set to 'all'.
@@ -466,7 +479,7 @@ you like though, for example "AngleOfEscape = 90" will turn off at 90 degrees, o
     AngleOfEscape = 0
 
 An additional option for helicopters, vector thrust, and VTOL, ExcludeSpinners allows you
-to specify spinner sub-construct indices to be excluded from use by this AI (if you use the 'all' option
+to specify spinner SubConstruct IDs to be excluded from use by this AI (if you use the 'all' option
 for VTSpinners or VTOLSpinners). If used, this must be a comma-delimited list surrounded
 by curly braces, for example "ExcludeSpinners = {0,5}". Note that HeliSpinners are automatically excluded
 from use by vector thrust if they are specified.
@@ -479,5 +492,6 @@ Whether to orbit the spawn point when there are no enemies, or just fly off in a
 
 ## Useful links
 
+* [Cutlass demo on Steam workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=1354628015) This is a demo of the AI, showing off concepts like missile evasion and vector thrust.
 * [From the Depths on Steam](http://store.steampowered.com/app/268650/From_the_Depths/)
 * [Forum thread for this AI where you can go for help.](http://www.fromthedepthsgame.com/forum/showthread.php?tid=9108) Note: if your issue is "my plane doesn't fly", make sure it DOES fly with the normal aerial AI -- this AI can't overcome bad design, though it can help in some cases. Exception: vector thrust. Normal AI can't do that (without a lot of ACBs anyway). This code is not magic and can't make a plane fly that couldn't otherwise. 
