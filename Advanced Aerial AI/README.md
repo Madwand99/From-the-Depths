@@ -229,12 +229,13 @@ This system allows the vehicle designer to set different weights, or priorities,
 
 Note that weights are relative. That means arbitrarily increasing a weight may not do what you expect: a two weights at 1 and 2 have the same relative importance as the same weights at 100 and 200.
 
+Flocking is an advanced behavior that allows formation-like flying and collision avoidance with friendly vehicles in the "flock".
+See below a pair of demo Cutlass's using flocking to maintain a formation:
+
 <p align="center">
 <img src="http://i.imgur.com/iNHJDhO.jpg" alt="Formation flying" width="600"/>
-Demo Cutlass's using flocking to maintain formation.
 </p>
 
-Flocking is an advanced behavior that allows formation-like flying and collision avoidance with friendly vehicles in the "flock".
 Start using flocking by setting "NeighborRadius" to a positive number (try 300, for example). This will tell your vehicle to "notice" other friendly vehicles within this radius and form a flock with them.
 
     NeighborRadius = 0  -- in meters
@@ -331,11 +332,10 @@ The weight (or priority) to give dodging missiles for the advanced steering syst
 ## VECTOR THRUST OPTIONS
 
 Vector thrust means placing jets on spin blocks, potentially allowing much more powerful yaw, pitch,
-or roll authority on a vehicle:
+or roll authority on a vehicle. See below a demo Cutlass using vector thrust for roll:
 
 <p align="center">
 <img src="http://i.imgur.com/5ieUbRY.jpg" alt="Vector thrust" width="600"/>
-Cutlass using vector thrust to roll.
 </p>
 
 Turn this option on by specifying a number of SubConstruct IDs
