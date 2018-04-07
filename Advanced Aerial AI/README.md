@@ -43,7 +43,7 @@ This AI does a lot of "thinking", potentially considering information about ever
 SubConstruct IDs are needed for the HeliSpinners, VTSpinners, VTOLSpinners, and ExcludeSpinners options.
 These IDs are attached to spinner blocks. You can find them in the lower-left hand corner of the Spinner GUI, as follows:
 
-![SubConstruct IDs](https://i.imgur.com/P3bf6XT)
+![SubConstruct IDs](https://octodex.github.com/images/yaktocat.png)
 
 ## BASIC OPTIONS
 When the vehicle is within "AngleBeforeRoll" degrees of its target, it will try to yaw towards
