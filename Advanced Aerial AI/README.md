@@ -43,7 +43,7 @@ This AI does a lot of "thinking", potentially considering information about ever
 SubConstruct IDs are needed for the HeliSpinners, VTSpinners, VTOLSpinners, and ExcludeSpinners options.
 These IDs are attached to spinner blocks. You can find them in the lower-left hand corner of the Spinner GUI, as follows:
 
-<img src="http://i.imgur.com/P3bf6XT.jpg" alt="SubConstruct IDs" style="width: 400px;"/>
+<img src="http://i.imgur.com/P3bf6XT.jpg" alt="SubConstruct IDs" width="400"/>
 
 ## BASIC OPTIONS
 When the vehicle is within "AngleBeforeRoll" degrees of its target, it will try to yaw towards
@@ -227,8 +227,8 @@ This system allows the vehicle designer to set different weights, or priorities,
 
 Note that weights are relative. That means arbitrarily increasing a weight may not do what you expect: a two weights at 1 and 2 have the same relative importance as the same weights at 100 and 200.
 
-<img src="http://i.imgur.com/iNHJDhO.jpg" alt="Formation flying" style="width: 400px;"/>
-Demo Cutlass's using flocking to maintain formation.
+<img src="http://i.imgur.com/iNHJDhO.jpg" alt="Formation flying" width="400"/>
+Demo Cutlass's using flocking to maintain formation.<BR>
 
 
 Flocking is an advanced behavior that allows formation-like flying and collision avoidance with friendly vehicles in the "flock".
@@ -330,8 +330,8 @@ The weight (or priority) to give dodging missiles for the advanced steering syst
 Vector thrust means placing jets on spin blocks, potentially allowing much more powerful yaw, pitch,
 or roll authority on a vehicle:
 
-<img src="http://i.imgur.com/5ieUbRY.jpg" alt="Vector thrust" style="width: 400px;"/>
-Cutlass using vector thrust to roll.
+<img src="http://i.imgur.com/5ieUbRY.jpg" alt="Vector thrust" width="400"/>
+Cutlass using vector thrust to roll.<BR>
 
 
 Turn this option on by specifying a number of SubConstruct IDs
