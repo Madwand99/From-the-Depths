@@ -231,7 +231,7 @@ Note that weights are relative. That means arbitrarily increasing a weight may n
 
 <p align="center">
 <img src="http://i.imgur.com/iNHJDhO.jpg" alt="Formation flying" width="600"/>
-<figcaption>Demo Cutlass's using flocking to maintain formation.</figcaption>
+Demo Cutlass's using flocking to maintain formation.
 </p>
 
 Flocking is an advanced behavior that allows formation-like flying and collision avoidance with friendly vehicles in the "flock".
@@ -335,7 +335,7 @@ or roll authority on a vehicle:
 
 <p align="center">
 <img src="http://i.imgur.com/5ieUbRY.jpg" alt="Vector thrust" width="600"/>
-<figcaption>Cutlass using vector thrust to roll.</figcaption>
+Cutlass using vector thrust to roll.
 </p>
 
 Turn this option on by specifying a number of SubConstruct IDs
