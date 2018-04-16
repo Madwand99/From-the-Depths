@@ -11,18 +11,14 @@ The AI mainframe must be set to "On" for this AI to be enabled. Any other settin
 
 ## Frequently Asked Questions
 
-#### How to use this AI for orbiters?
-
 <details>
-<summary>View answer</summary>
+<summary>How to use this AI for orbiters?</summary>
 
 An "orbiter" is a vehicle that continually circles their target instead of making strafing runs. To do this, set "AngleBeforeTurn" to a larger value, usually between 40-90 degrees depending on your vehicles maneuverability. The smaller the number, the tighter the orbit, and the more maneuverable your vehicle will need to be. Most orbiters use only yawing to turn, so you will also usually need to set "AngleBeforeRoll" to 180 so your vehicle won't try to roll.
 </details>
 
-#### How to use this AI for naval and land vehicles?
-
 <details>
-<summary>View answer</summary>
+<summary>How to use this AI for naval and land vehicles?</summary>
 
 * Set `AngleBeforeRoll = 180`, so your ship yaws to turn all the time.
 * Set `CruiseAltitude` to the typical altitude of your vehicle. This isn't strictly necessary to do but it helps the AI not be confused.
@@ -32,10 +28,8 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set other parameters as desired to control the behavior of the ship. Good luck!
 </details>
 
-#### How to use this AI for hovercraft, helicopters, or airships?
-
 <details>
-<summary>View answer</summary>
+<summary>How to use this AI for hovercraft, helicopters, or airships?</summary>
 
 * Set `AngleBeforeRoll = 180`, so your ship yaws to turn all the time.
 * Set `MaxElevationAngle = 0` so that your ship won't pitch up or down.
@@ -43,10 +37,8 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * To use helicopter blades to control altitude, choose some spinners to set in `HeliSpinners` and/or some dediblades to set in `HeliDediblades`, or set either of these options to `'all'`, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
 </details>
 
-#### How to use this AI for ramming/kamikaze vehicles?
-
 <details>
-<summary>View answer</summary>
+<summary>How to use this AI for ramming/kamikaze vehicles?</summary>
 
 * In the dogfighting options, set `MatchTargetAltitude = true` and `MatchAltitudeOffset = 0`. This will make the AI try to match altitudes with the target vehicle. `MatchAltitudeRange` will control how far away the AI will try to do this.
 * Set `UsePredictiveGuidance = true` so the vehicle aims where the target will be, not where it is.
@@ -54,10 +46,8 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set `AvoidTarget = false` OR `CollisionTThreshold = 0` so the collision avoidance code does not try to steer away from a collision.
 </details>
 
-#### How to improve frames per second?
-
 <details>
-<summary>View answer</summary>
+<summary>How to improve frames per second?</summary>
 
 This AI does a lot of "thinking", potentially considering information about every vehicle and enemy missile in play, many times per second. Under some conditions this can make the AI slow to run, reducing FPS -- particularly this can occur in "swarm builds" in which many copies of this AI are operating in parallel. There are several options which can be used to mitigate this problem:
 
@@ -66,10 +56,8 @@ This AI does a lot of "thinking", potentially considering information about ever
 * Finally, and perhaps most importantly, increase `UpdateRate` to `2` or more. This will do the most to help, but it will slightly reduce the responsiveness of your vehicle. Your vehicle will still fly, but it won't update it's desired heading or altitude as often.
 </details>
 
-#### Where to find SubConstruct IDs?
-
 <details>
-<summary>View answer</summary>
+<summary>Where to find SubConstruct IDs?</summary>
 
 SubConstruct IDs are needed for the `HeliSpinners`, `VTSpinners`, `VTOLSpinners`, and `ExcludeSpinners` options.
 These IDs are attached to spinner blocks. You can find them in the lower-left hand corner of the Spinner GUI, as follows:
