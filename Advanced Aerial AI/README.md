@@ -30,6 +30,13 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * To use helicopter blades to control altitude, choose some spinners to set in HeliSpinners and/or some dediblades to set in HeliDediblades, or set either of these options to 'all', and set min and max helicopter blade speeds to an appropriate value for your helicopter.
 * You may gain some benefit from using smaller values of "PitchDamping". If the default value isn't working, try something like 20. This will make a hovercraft more sensitive to deviations in pitch.
 
+#### To use this AI for ramming/kamikaze vehicles:
+
+* In the dogfighting options, set MatchTargetAltitude = true and MatchAltitudeOffset = 0. This will make the AI try to match altitudes with the target vehicle. MatchAltitudeRange will control how far away the AI will try to do this.
+* Set UsePredictiveGuidance = true so the vehicle aims where the target will be, not where it is.
+* Set AngleBeforeTurn = 0 so that the vehicle heads directly towards the enemy.
+* Set AvoidTarget = false so the collision avoidance code does not try to steer away from a collision.
+
 #### How to improve FPS
 
 This AI does a lot of "thinking", potentially considering information about every vehicle and enemy missile in play, many times per second. Under some conditions this can make the AI slow to run, reducing FPS -- particularly this can occur in "swarm builds" in which many copies of this AI are operating in parallel. There are several options which can be used to mitigate this problem:
