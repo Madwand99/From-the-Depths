@@ -9,10 +9,10 @@ Note that when you paste this code in, you will only see a bit less than 500 lin
 
 The AI mainframe must be set to "On" for this AI to be enabled. Any other setting will allow the normal AI behaviors (allowing, for example, patrol mode to work).
 
-#### To use this AI for orbiters:
-
 <details>
-<summary>View answer</summary>
+<summary>
+#### To use this AI for orbiters:
+</summary>
 
 An "orbiter" is a vehicle that continually circles their target instead of making strafing runs. To do this, set "AngleBeforeTurn" to a larger value, usually between 40-90 degrees depending on your vehicles maneuverability. The smaller the number, the tighter the orbit, and the more maneuverable your vehicle will need to be. Most orbiters use only yawing to turn, so you will also usually need to set "AngleBeforeRoll" to 180 so your vehicle won't try to roll.
 </details>
@@ -39,7 +39,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set `MaxElevationAngle = 0` so that your ship won't pitch up or down.
 * To use thrusters to control altitude, set `UseAltitudeJets = true`.
 * To use helicopter blades to control altitude, choose some spinners to set in `HeliSpinners` and/or some dediblades to set in `HeliDediblades`, or set either of these options to `'all'`, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
-<details>
+</details>
 
 #### To use this AI for ramming/kamikaze vehicles:
 
