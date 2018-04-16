@@ -1,6 +1,6 @@
 --[[
-Advanced aerial AI, version 5.1
-Created by Madwand 4/05/2018
+Advanced aerial AI, version 5.2
+Created by Madwand 4/15/2018
 Use and modify this code however you like, however please credit me
 if you use this AI or a derivative of it in a tournament, or you publish a blueprint
 using it. Also let me know if you make any significant improvements,
