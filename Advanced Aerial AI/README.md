@@ -15,39 +15,38 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 
 #### To use this AI for naval and land vehicles:
 
-* Set "AngleBeforeRoll" to 180, so your ship yaws to turn all the time.
-* Set "CruiseAltitude" to the typical altitude of your vehicle. This isn't strictly necessary to do but it helps the AI not be confused.
-* Set "DeployAlt" to some large negative value so it won't try to do a water start and thus turn off the engines.
-* Set "DriveMode" to 0 or 1 for water/land mode controls respectively.
+* Set `AngleBeforeRoll = 180`, so your ship yaws to turn all the time.
+* Set `CruiseAltitude` to the typical altitude of your vehicle. This isn't strictly necessary to do but it helps the AI not be confused.
+* Set `DeployAlt` to some large negative value so it won't try to do a water start and thus turn off the engines.
+* Set `DriveMode` to `0` or `1` for water/land mode controls respectively.
 * You will probably want to make your vehicle an orbiter (see above) so it won't try to strafe the enemy and collide with them.
 * Set other parameters as desired to control the behavior of the ship. Good luck!
 
 #### To use this AI for hovercraft, helicopters, or airships:
 
-* Set "AngleBeforeRoll" to 180, so your ship yaws to turn all the time.
-* Set "MaxElevationAngle" to 0 so that your ship won't pitch up or down.
-* To use thrusters to control altitude, set UseAltitudeJets = true.
-* To use helicopter blades to control altitude, choose some spinners to set in HeliSpinners and/or some dediblades to set in HeliDediblades, or set either of these options to 'all', and set min and max helicopter blade speeds to an appropriate value for your helicopter.
-* You may gain some benefit from using smaller values of "PitchDamping". If the default value isn't working, try something like 20. This will make a hovercraft more sensitive to deviations in pitch.
+* Set `AngleBeforeRoll = 180`, so your ship yaws to turn all the time.
+* Set `MaxElevationAngle = 0` so that your ship won't pitch up or down.
+* To use thrusters to control altitude, set `UseAltitudeJets = true`.
+* To use helicopter blades to control altitude, choose some spinners to set in `HeliSpinners` and/or some dediblades to set in `HeliDediblades`, or set either of these options to `'all'`, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
 
 #### To use this AI for ramming/kamikaze vehicles:
 
-* In the dogfighting options, set MatchTargetAltitude = true and MatchAltitudeOffset = 0. This will make the AI try to match altitudes with the target vehicle. MatchAltitudeRange will control how far away the AI will try to do this.
-* Set UsePredictiveGuidance = true so the vehicle aims where the target will be, not where it is.
-* Set AngleBeforeTurn = 0 so that the vehicle heads directly towards the enemy.
-* Set AvoidTarget = false so the collision avoidance code does not try to steer away from a collision.
+* In the dogfighting options, set `MatchTargetAltitude = true` and `MatchAltitudeOffset = 0`. This will make the AI try to match altitudes with the target vehicle. `MatchAltitudeRange` will control how far away the AI will try to do this.
+* Set `UsePredictiveGuidance = true` so the vehicle aims where the target will be, not where it is.
+* Set `AngleBeforeTurn = 0` so that the vehicle heads directly towards the enemy.
+* Set `AvoidTarget = false` OR `CollisionTThreshold = 0` so the collision avoidance code does not try to steer away from a collision.
 
 #### How to improve FPS
 
 This AI does a lot of "thinking", potentially considering information about every vehicle and enemy missile in play, many times per second. Under some conditions this can make the AI slow to run, reducing FPS -- particularly this can occur in "swarm builds" in which many copies of this AI are operating in parallel. There are several options which can be used to mitigate this problem:
 
-* Turn off missile avoidance (set WarningMainframe = -1) if your vehicle doesn't need it.
-* Turn off collision detection if you don't think it will be helpful (set "AvoidFriendlies" and/or "AvoidOtherEnemies" to false as appropriate).
-* Finally, and perhaps most importantly, increase UpdateRate to 2 or more. This will do the most to help, but it will slightly reduce the responsiveness of your vehicle. Your vehicle will still fly, but it won't update it's desired heading or altitude as often.
+* Turn off missile avoidance (set `WarningMainframe = -1`) if your vehicle doesn't need it.
+* Turn off collision detection if you don't think it will be helpful (set `AvoidFriendlies` and/or `AvoidOtherEnemies` to `false` as appropriate).
+* Finally, and perhaps most importantly, increase `UpdateRate` to `2` or more. This will do the most to help, but it will slightly reduce the responsiveness of your vehicle. Your vehicle will still fly, but it won't update it's desired heading or altitude as often.
 
 #### Where to find SubConstruct IDs
 
-SubConstruct IDs are needed for the HeliSpinners, VTSpinners, VTOLSpinners, and ExcludeSpinners options.
+SubConstruct IDs are needed for the `HeliSpinners`, `VTSpinners`, `VTOLSpinners`, and `ExcludeSpinners` options.
 These IDs are attached to spinner blocks. You can find them in the lower-left hand corner of the Spinner GUI, as follows:
 
 <p align="center">
@@ -55,16 +54,16 @@ These IDs are attached to spinner blocks. You can find them in the lower-left ha
 </p>
 
 ## BASIC OPTIONS
-When the vehicle is within "AngleBeforeRoll" degrees of its target, it will try to yaw towards
-(or away!) from its target such that its nose is pointed "AngleBeforeTurn" degrees away from it.
-If UsePreferredSide = true, use a positive value of AngleBeforeTurn to approach targets on the right,
+When the vehicle is within `AngleBeforeRoll` degrees of its target, it will try to yaw towards
+(or away!) from its target such that its nose is pointed `AngleBeforeTurn` degrees away from it.
+If `UsePreferredSide = true`, use a positive value of `AngleBeforeTurn` to approach targets on the right,
 a negative value to approach targets on the left. Otherwise, always use a positive value. 
 
     AngleBeforeTurn = 10
 
 If the vehicle is at greater angle than this from it's target, it will try to roll towards it.
-(and stop rolling when AngleBeforeTurn is reached).
-Set this to 180 to NEVER use rolling to turn the vehicle.
+(and stop rolling when `AngleBeforeTurn` is reached).
+Set this to `180` to NEVER use rolling to turn the vehicle.
 
     AngleBeforeRoll = 30
 
@@ -73,7 +72,7 @@ NOTE: All distances are measured along the ground, in meters.
 
     AttackRunDistance = 600
 
-Within this distance, the vehicle will just try to go straight until AttackRunDistance is triggered.
+Within this distance, the vehicle will just try to go straight until `AttackRunDistance` is triggered.
 
     AbortRunDistance = 300
 
@@ -82,7 +81,7 @@ to predict it's future position.
 
     ClosingDistance = 1000
 
-If AttackRunDistance hasn't been triggered within this time, force an attack run.
+If `AttackRunDistance` hasn't been triggered within this time, force an attack run.
 
     ForceAttackTime = 15
 
@@ -92,7 +91,7 @@ Altitude we will try to cruise at by default.
 
 Maximum (straight-line) distance AI will try to permit vehicle to wander from it's target. This is mostly useful for tournaments that impose a distance limit, and vehicles that might run away for various reasons (i.e. missile evasion). After the vehicle goes beyond this limit, will impose an increasingly greater steering force to try to get the vehicle pointed back on target.
 
-    MaxDistance = 1000
+    MaxDistance = 5000
 
 Maximum positive and negative pitch angles AI will attempt to use while climbing or descending (respectively).
 Also limits yaw when vehicle is rolled on it's side.
@@ -137,15 +136,15 @@ My thanks to Draba, goduranus, and CP75 for their previous work on PID controlle
 
 ## HELICOPTER OPTIONS
 
-A list of subconstruct ID's for the individual spinners you want to use for altitude control on a helicopter. Use 'all' if you want to use all spinners. These do NOT include Dediblades; use the next setting for that.
+A list of subconstruct ID's for the individual spinners you want to use for altitude control on a helicopter. Use `'all'` if you want to use all spinners. These do NOT include Dediblades; use the next setting for that.
 
     HeliSpinners = {}
 
-A list of ID's for the individual dediblades you want to use for altitude control on a helicopter. Use 'all' if you want to use all dediblades. Right now you'll have to guess a bit to test the index; they are usually numbered from 0 starting from the first dediblade you place on the hull.
+A list of ID's for the individual dediblades you want to use for altitude control on a helicopter. Use `'all'` if you want to use all dediblades. Right now you'll have to guess a bit to test the index; they are usually numbered from `0` starting from the first dediblade you place on the hull.
 
     HeliDediblades = {}
 
-The helicopter blade speeds to use for controlling altitude. These should range between -30 to 30.
+The helicopter blade speeds to use for controlling altitude. These should range between `-30` to `30`.
 Use AltitudeClamp to control how smoothly these speeds are transitioned between
 as your helicopter approaches it's target altitude.
 
@@ -205,7 +204,7 @@ steering system. The AI will always focus on avoiding the most imminent collisio
 
 The "CollisionTThreshold" parameter is how distant in time (in seconds)
 a potential collision will be considered dangerous -- the less maneuverable your vehicle, the higher you may want to set this.
-Set to 0 if you don't care about collisions.
+Set to `0` if you don't care about collisions.
 
     CollisionTThreshold = 5
 
@@ -225,7 +224,7 @@ Use the advanced steering system to avoid collisions with friendly vehicles. Can
 
     AvoidFriendlies = true
 
-Avoid collisions with your target. Set to "false" if you have a melee vehicle.
+Avoid collisions with your target. Set to `false` if you have a melee vehicle.
 
     AvoidTarget = true
 
@@ -233,7 +232,7 @@ Avoid collisions with other enemies. Can be expensive to calculate if there are 
 
     AvoidOtherEnemies = true
 
-The weight, or priority, to set on avoiding collisions for the advanced steering system. Set to 0 if you don't care. Any large value (10 is fine in most cases) will set a high priority on avoiding collisions.
+The weight, or priority, to set on avoiding collisions for the advanced steering system. Set to `0` if you don't care. Any large value (10 is fine in most cases) will set a high priority on avoiding collisions.
 
     AvoidanceWeight = 10
 
@@ -245,7 +244,7 @@ This system allows the vehicle designer to set different weights, or priorities,
 * [Steering Behaviors For Autonomous Characters](http://www.red3d.com/cwr/steer/gdc99/)
 * [Boids](http://www.red3d.com/cwr/boids/)
 
-Note that weights are relative. That means arbitrarily increasing a weight may not do what you expect: a two weights at 1 and 2 have the same relative importance as the same weights at 100 and 200.
+Note that weights are relative. That means arbitrarily increasing a weight may not do what you expect: two weights at 1 and 2 have the same relative importance as the same weights at 100 and 200.
 
 Flocking is an advanced behavior that allows formation-like flying and collision avoidance with friendly vehicles in the "flock".
 See below a pair of demo Cutlass's using flocking to maintain a formation:
@@ -254,7 +253,7 @@ See below a pair of demo Cutlass's using flocking to maintain a formation:
 <img src="http://i.imgur.com/iNHJDhO.jpg" alt="Formation flying" width="600"/>
 </p>
 
-Start using flocking by setting "NeighborRadius" to a positive number (try 300, for example). This will tell your vehicle to "notice" other friendly vehicles within this radius and form a flock with them.
+Start using flocking by setting `NeighborRadius` to a positive number (try `300`, for example). This will tell your vehicle to "notice" other friendly vehicles within this radius and form a flock with them.
 
     NeighborRadius = 0  -- in meters
 
@@ -262,15 +261,15 @@ For alignment and cohesion, ignore craft that are going below this speed (in m/s
 
     IgnoreBelowSpeed = 0
 
-Set FlockWithBlueprintNames = 'all' to use alignment and cohesion with all friendly craft.
+Set `FlockWithBlueprintNames = 'all'` to use alignment and cohesion with all friendly craft.
 Enclose a comma-delimited list of vehicle names in curly braces {} to use alignment and cohesion
 with only craft with those names. Names given will match with any vehicle that starts with that
-combination of letters, for example {'Rapier'} will match with any vehicle named
+combination of letters, for example `{'Rapier'}` will match with any vehicle named
 'Rapier', 'Rapier-A', 'Rapier-E', etc.
 
     FlockWithBlueprintNames = 'all'  -- or, for example {'Rapier', 'Cutlass'}, etc.
 
-The weight given to alignment, or the desire to match headings with friendly craft. Usually 1 or 0 to turn this on or off respectively, but other values are fine too and will change steering priorities accordingly.
+The weight given to alignment, or the desire to match headings with friendly craft. Usually `1` or `0` to turn this on or off respectively, but other values are fine too and will change steering priorities accordingly.
 
     AlignmentWeight = 1
 
@@ -290,7 +289,7 @@ A cohesion weight for friendly vehicles at ranges outside NeighborRadius. It isn
 
     LongRangeWeight = .5
 
-The weight given to the "normal" target-specific behaviors of attack, escape, etc. Usually you should leave this at 1. A value of 0 means it ignores enemies when it comes to navigation.
+The weight given to the "normal" target-specific behaviors of attack, escape, etc. Usually you should leave this at `1`. A value of `0` means it ignores enemies when it comes to navigation.
 
     TargetWeight = 1
 
@@ -299,16 +298,16 @@ The weight given to the "normal" target-specific behaviors of attack, escape, et
 "Dogfighting" for this AI means changing behavior of the AI according to behavior of the enemy target.
 
 Whether or not to try to match our altitude to the target.
-If set to "false", will use CruiseAltitude during combat.
+If set to `false`, will use `CruiseAltitude` during combat.
 
     MatchTargetAltitude = false
 
-Range within which to attempt altitude matching. Beyond this range, uses CruiseAltitude.
+Range within which to attempt altitude matching. Beyond this range, uses `CruiseAltitude`.
 
     MatchAltitudeRange = 1000
 
 Altitude in meters above (or below, if negative) the target the vehicle will attempt to attain.
-Altitude will still be constrained by "MinAltitude" and "MaxAltitude" terrain avoidance constraints.
+Altitude will still be constrained by `MinAltitude` and `MaxAltitude` terrain avoidance constraints.
 
     MatchAltitudeOffset = 0
 
@@ -316,7 +315,7 @@ The minimum altitude the aircraft will go to when matching altitude
 
     MinMatchingAltitude = 100
 
-Use vehicle roll to try to "broadside" a target. This is very different to a naval broadside (which uses yaw). This is intended for vehicles which have weapons that don't have good elevation control. Set "BroadsideWithin" to a positive number to start broadsiding when the target is within a certain range -- usually would set to the effective range of your weapons. "BroadsideAngle" then controls the roll angle relative to the target you want your vehicle to take. "0" means you want either side of your vehicle pointed at the enemy. "90" means the bottom of your vehicle, "-90" the top. Roll angles will respect the "MaxRollAngle" setting, in the advanced options. The AI will not attempt to broadside while performing a roll to turn, so this option may work best for vehicles that only yaw to turn.
+Use vehicle roll to try to "broadside" a target. This is very different to a naval broadside (which uses yaw). This is intended for vehicles which have weapons that don't have good elevation control. Set `BroadsideWithin` to a positive number to start broadsiding when the target is within a certain range -- usually would set to the effective range of your weapons. `BroadsideAngle` then controls the roll angle relative to the target you want your vehicle to take. `0` means you want either side of your vehicle pointed at the enemy. `90` means the bottom of your vehicle, `-90` the top. Roll angles will respect the `MaxRollAngle` setting, in the advanced options. The AI will not attempt to broadside while performing a roll to turn, so this option may work best for vehicles that only yaw to turn.
 
     BroadsideWithin = 0  -- in meters
     BroadsideAngle = 0
@@ -325,9 +324,9 @@ Use vehicle roll to try to "broadside" a target. This is very different to a nav
 
 If you allow it to, this AI will try to avoid enemy missiles by running away from them using the advanced steering system. This is generally only useful on maneuverable vehicles (so that it can turn to run away in time), and fast vehicles (so it can buy itself time or just completely outrun missiles).
 
-Set "WarningMainframe = -1" to ignore missiles. Set it to the index
+Set `WarningMainframe = -1` to ignore missiles. Set it to the index
 of the mainframe with missile warners, if you have missile warners. If you only have one mainframe,
-then WarningMainframe = 0.
+then `WarningMainframe = 0`.
 
     WarningMainframe = -1
 
@@ -343,7 +342,7 @@ The speed (in m/s) your ship is usually able to go when dodging missiles.
 
     NormalSpeed = 100
 
-The weight (or priority) to give dodging missiles for the advanced steering system. This is on a *per missile* basis, so a large missile barrage is considered very high-priority in total. Also, the closer to impact a missile is, the more importance it is given. "0" will ignore missiles, larger values will give running away increasingly high priority (2 works fine in my tests, though you may want it higher if even one missile is dangerous to your vehicle).
+The weight (or priority) to give dodging missiles for the advanced steering system. This is on a *per missile* basis, so a large missile barrage is considered very high-priority in total. Also, the closer to impact a missile is, the more importance it is given. `0` will ignore missiles, larger values will give running away increasingly high priority (`2` works fine in my tests, though you may want it higher if even one missile is dangerous to your vehicle).
 
     DodgingWeight = 2
 
@@ -357,20 +356,20 @@ or roll authority on a vehicle. See below a demo Cutlass using vector thrust for
 </p>
 
 Turn this option on by specifying a number of SubConstruct IDs
-to use with VTSpinners. Use VTSpinners = 'all' to use all spinners, or supply a comma-delimited
-list like this: {0,1,2}. Spinners placed vertically are for yaw. Spinners placed horizontally
+to use with `VTSpinners`. Use `VTSpinners = 'all'` to use all spinners, or supply a comma-delimited
+list as follows: `{0,1,2}`. Spinners placed vertically are for yaw. Spinners placed horizontally
 control roll and pitch (so I suggest placing them farther to the left and right of your CoM).
-Also see the "ExcludeSpinners" setting to specify a list of spinners to exclude, if this is set to 'all'.
+Also see the `ExcludeSpinners` option to specify a list of spinners to exclude, if this is set to `'all'`.
 
     VTSpinners = nil
 
-The maximum angle to set any particular spinner to. Roll and pitch angles are cumulative (so make sure they sum to at most 90 degrees). The maximum angle you can specify is 90 degrees. Set to 0 to not use that particular kind of vector
+The maximum angle to set any particular spinner to. Roll and pitch angles are cumulative (so make sure they sum to at most 90 degrees). The maximum angle you can specify is 90 degrees. Set to `0` to not use that particular kind of vector
 thrust. You can use negative angles to reverse the angle direction.
 The VTOL angle is the downwards angle VTOL spinners will be set to in VTOL mode (see next section).
 
     MaxVTAngle = {30,30,30,90} -- yaw, roll, pitch, VTOL
 
-The maximum speed at which vector thrust spinners change direction. Ranges between 1 and 30. You will want this at 30 for best vehicle performance but may want to set it lower for the sake of smoother visual changes.
+The maximum speed at which vector thrust spinners change direction. Ranges between `1` and `30`. You will want this at `30` for best vehicle performance but may want to set it lower for the sake of smoother visual changes.
 
     VTSpeed = 30
 
@@ -384,13 +383,13 @@ Use jets pointing up or down to assist in controlling altitude.
 
 An option for airships is to allow the AI to manually control downward-pointing engine drive
 fractions. This option can be turned off above a certain speed (in m/s) for VTOL takeoffs.
-Set "UseVTOLBeneathSpeed" to a large number to use VTOL all the time
+Set `UseVTOLBeneathSpeed` to a large number to use VTOL all the time
 
     UseVTOLBeneathSpeed = 0
 
-A list of engine indices to use for VTOL. Set to 'all' to use all downward-pointing engines.
-Use a list format, i.e. {0,1,2,3} to specify exact engine indices -- generally engines are numbered in the order you place them on the vehicle. Engines may be attached to
-spin blocks for use with vector thrust, and will be rotated backwards for normal use when "UseVTOLBeneathSpeed"
+A list of engine indices to use for VTOL. Set to `'all'` to use all downward-pointing engines.
+Use a list format, i.e. `{0,1,2,3}` to specify exact engine indices -- generally engines are numbered in the order you place them on the vehicle. Engines may be attached to
+spin blocks for use with vector thrust, and will be rotated backwards for normal use when `UseVTOLBeneathSpeed`
 is exceeded. If engines are on spin blocks, you must specify their indices if the AI is to
 control their drive fraction.
 For engines mounted to the hull, set each such engine to "Main".
@@ -400,11 +399,11 @@ power you want to use on that engine.
 
     VTOLEngines = nil
 
-The set of VTOL SubConstruct spinner IDs to use when in VTOL mode. Set to 'all' to select all spinners capable of
-pointing downwards. Otherwise, choose a list of spinner SubConstruct IDs as follows: {0,1,2,3}.
+The set of VTOL SubConstruct spinner IDs to use when in VTOL mode. Set to `'all'` to select all spinners capable of
+pointing downwards. Otherwise, choose a list of spinner SubConstruct IDs as follows: `{0,1,2,3}`.
 VTOL spinners will angle downwards at their given MaxVTAngle when in VTOL mode, otherwise
 they will point backwards and operate as normal vectored thrust.
-Also see the "ExcludeSpinners" setting to specify a list of spinners to exclude, if this is set to 'all'.
+Also see the `ExcludeSpinners` setting to specify a list of spinners to exclude, if this is set to `'all'`.
 
     VTOLSpinners = 'all'
 
@@ -413,36 +412,36 @@ Also see the "ExcludeSpinners" setting to specify a list of spinners to exclude,
 
 These are options most users shouldn't need to change.
 
-0 for water mode, 1 for land mode, 2 for air mode. You can try it for non-aircraft, but YMMV.
+Set to `0` for water mode, `1` for land mode, `2` for air mode.
 
     DriveMode = 2
 
-How often to recalculate heading and altitude. At 1 (the minimum), these will recalculate every update. At 10,
+How often to recalculate heading and altitude. At `1` (the minimum), these will recalculate every update. At `10`,
 they will recalculate every 10th update. The lower UpdateRate is, the more
 responsive the vehicle will be, but it will also take more processing time. Thus higher values may increase FPS.
 See more information in [How to improve FPS](https://github.com/Madwand99/From-the-Depths/tree/master/Advanced%20Aerial%20AI#how-to-improve-fps).
 
     UpdateRate = 1
 
-This AI automatically clamps "MaxPitch" and "MinPitch" according to how near the aircraft is to it's target altitude to prevent overshooting when changing altitude. Higher values of "AltitudeClamp" decrease this effect, allowing steeper changes in altitude. Lower values help prevent overshooting. AltitudeClamp also controls how gradually airships approach their target altitude when using altitude jets or helicopter blades.
+This AI automatically clamps `MaxPitch` and `MinPitch` according to how near the aircraft is to it's target altitude to prevent overshooting when changing altitude. Higher values of `AltitudeClamp` decrease this effect, allowing steeper changes in altitude. Lower values help prevent overshooting. AltitudeClamp also controls how gradually airships approach their target altitude when using altitude jets or helicopter blades.
 
     AltitudeClamp = .2
 
-The default roll angle to maintain. Set it to 90 to have the vehicle usually on it's side.
-You may want to set "AngleBeforeTurn" to 180 if you do this, so you never yaw.
+The default roll angle to maintain. Set it to `90` to have the vehicle usually on it's side.
+You may want to set `AngleBeforeTurn = 180` if you do this, so you never yaw.
 
     DefaultRollAngle = 0
 
 There are three kinds of ways this AI can use to control forward speed (i.e., main drive):
-* MainDriveControlType = 0: Uses standard throttle control. Most vehicles will want this option.
-* MainDriveControlType = 1: Use forward (only) propulsion balancing. This may help to compensate
+* `MainDriveControlType = 0`: Uses standard throttle control. Most vehicles will want this option.
+* `MainDriveControlType = 1`: Use forward (only) propulsion balancing. This may help to compensate
 for damage to thrusters, or unbalanced thruster placement compared to the center of mass.
 WARNING: Propulsion balancing can be very unreliable. YMMV.
-* MainDriveControlType = 2: Control throttle by varying drive fraction. The AI will try to guess
+* `MainDriveControlType = 2`: Control throttle by varying drive fraction. The AI will try to guess
 which thrusters are forward thrusters. It will EXCLUDE any thrusters on spin blocks, so vectored
 thrust continues to operate at full power for greatest possible maneuverability.
 
-Choose whatever works for you. I suggest 0 for most vehicles, but vehicles using vector thrust may want to try 2. This decision only matters if Thottle values you choose aren't always 1.
+Choose whatever works for you. I suggest `0` for most vehicles, but vehicles using vector thrust may want to try `2`. This decision only matters if Thottle values you choose aren't always `1`.
 
     MainDriveControlType = 0
 
@@ -460,40 +459,40 @@ Set this to true if you are interested in knowing what the AI is "thinking" as i
 
     DebugMode = false
 
-Prefer to approach the enemy on only one side of the aircraft or not. Set AngleBeforeTurn positive
+Prefer to approach the enemy on only one side of the aircraft or not. Set `AngleBeforeTurn` positive
 or negative to choose the side.
 
     UsePreferredSide = false
 
 Predictive guidance tries to guess where the enemy will be by the time the aircraft will reach it,
-and head in that direction instead of the current position of the enemy. Set this to "true"
+and head in that direction instead of the current position of the enemy. Set this to `true`
 when you don't care about pointing directly at the enemy, and you wish to prioritize "cutting the
-circle" on a fast orbiter, or if you want to ram the enemy. Set to "false" if it is more important
+circle" on a fast orbiter, or if you want to ram the enemy. Set to `false` if it is more important
 to orient yourself in relation to the enemies current position during the attack run, for example if
 all your weapons are in a fixed-forward firing position.
 
     UsePredictiveGuidance = true
 
-AltitudeOffset is useful when you wish to create multiple vehicles of the same type, and you
+`AltitudeOffset` is useful when you wish to create multiple vehicles of the same type, and you
 don't want to individually set all the various altitude settings so they won't crash into each
-other. This value adjusts CruiseAltitude, MaxAltitude, MatchAltitudeOffset, and MinMatchingAltitude
-simultaneously. You can also give it two table values, e.g. {0,100}. This will randomly generate
+other. This value adjusts `CruiseAltitude`, `MaxAltitude`, `MatchAltitudeOffset`, and `MinMatchingAltitude`
+simultaneously. You can also give it two table values, e.g. `{0,100}`. This will randomly generate
 an offset in the range between 0-100, so your aircraft may be less likely to collide with others of it's kind.
 
     AltitudeOffset = 0
 
-AngleOfEscape is the angle relative to the enemy that is set when going from "attack mode" to "escape mode".
+`AngleOfEscape` is the angle relative to the current heading that is set when going from "attack mode" to "escape mode".
 It is set once when entering escape mode, and does not adjust to enemy movements.
-By default, it is set to 0, which means to keep flying in the original direction. You can set it to anything
-you like though, for example "AngleOfEscape = 90" will turn off at 90 degrees, or
-"AngleOfEscape = 180" will have the vehicle try to turn around. Note that if the steering system has other priorities, this escape angle is likely to be ignored.
+By default, it is set to `0`, which means to keep flying in the original direction. You can set it to anything
+you like though, for example `AngleOfEscape = 90` will turn off at 90 degrees, or
+`AngleOfEscape = 180` will have the vehicle try to turn around. Note that if the steering system has other priorities, this escape angle is likely to be ignored.
 
     AngleOfEscape = 0
 
-An additional option for helicopters, vector thrust, and VTOL, ExcludeSpinners allows you
-to specify spinner SubConstruct IDs to be excluded from use by this AI (if you use the 'all' option
-for VTSpinners or VTOLSpinners). If used, this must be a comma-delimited list surrounded
-by curly braces, for example "ExcludeSpinners = {0,5}". Note that HeliSpinners are automatically excluded
+An additional option for helicopters, vector thrust, and VTOL, `ExcludeSpinners` allows you
+to specify spinner SubConstruct IDs to be excluded from use by this AI (if you use the `'all'` option
+for `VTSpinners` or `VTOLSpinners`). If used, this must be a comma-delimited list surrounded
+by curly braces, for example `ExcludeSpinners = {0,5}`. Note that `HeliSpinners` are automatically excluded
 from use by vector thrust if they are specified.
 
     ExcludeSpinners = nil
