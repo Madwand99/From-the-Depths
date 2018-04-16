@@ -118,19 +118,23 @@ Maximum throttle we'll cruise at when no enemies are present.
 
 Throttle we'll use when engaged with enemies.
 
-    AttackRunThrottle = 1 -- when on an attack run (angle to target is less than "AngleBeforeRoll") inside of ClosingDistance 
-    EscapeThrottle = 1    -- triggered after coming within "AbortRunDistance" until "AttackRunDistance" is reached
-    RollingThrottle = 1   -- when rolling aircraft to face enemy (angle to target is greater than "AngleBeforeRoll")
-    ClosingThrottle = 1   -- when outside of ClosingDistance AND not in a roll
+```lua
+AttackRunThrottle = 1 -- when on an attack run (angle to target is less than "AngleBeforeRoll") inside of ClosingDistance 
+EscapeThrottle = 1    -- triggered after coming within "AbortRunDistance" until "AttackRunDistance" is reached
+RollingThrottle = 1   -- when rolling aircraft to face enemy (angle to target is greater than "AngleBeforeRoll")
+ClosingThrottle = 1   -- when outside of ClosingDistance AND not in a roll
+```
 
 ## PID SETTINGS
 
 These settings work similarly to the PID control block available for the normal FtD AI. PID control allows for much more stable flight (if desired). Most people may not need to edit these settings at all. The "P" setting is kP gain, or how powerfully the AI responds to a request for a change in angle. The "D" setting is Td derivative time and helps the AI smooth out overcorrections. Most of the time, the other settings won't need to be changed at all.
 
-    --                   P,        D,       I,    OutMax,   OutMin,    IMax,    IMin
-    yawPIDData      = {0.2,     0.05,     0.0,         1,       -1,       1,      -1}
-    rollPIDData     = {0.2,     0.05,     0.0,         1,       -1,       1,      -1}
-    pitchPIDData    = {0.2,     0.02,     0.0,         1,       -1,       1,      -1}
+```lua
+--                   P,        D,       I,    OutMax,   OutMin,    IMax,    IMin
+yawPIDData      = {0.2,     0.05,     0.0,         1,       -1,       1,      -1}
+rollPIDData     = {0.2,     0.05,     0.0,         1,       -1,       1,      -1}
+pitchPIDData    = {0.2,     0.02,     0.0,         1,       -1,       1,      -1}
+```
 
 My thanks to Draba, goduranus, and CP75 for their previous work on PID controllers for FtD, which this code also uses.
 
@@ -148,9 +152,10 @@ The helicopter blade speeds to use for controlling altitude. These should range 
 Use AltitudeClamp to control how smoothly these speeds are transitioned between
 as your helicopter approaches it's target altitude.
 
-    MinHelicopterBladeSpeed = 10 -- when lowering altitude
-    MaxHelicopterBladeSpeed = 30 -- when gaining altitude
-
+```lua
+MinHelicopterBladeSpeed = 10 -- when lowering altitude
+MaxHelicopterBladeSpeed = 30 -- when gaining altitude
+```
 
 ## TERRAIN AVOIDANCE OPTIONS
 
@@ -176,7 +181,7 @@ Cap vehicle throttle at this value when a possible collision is sensed.
     MaxTerrainThrottle = 1
 
 Use the advanced steering system to avoid difficult terrain by flying around, instead of over. Not guaranteed to work as this weight governs a priority that must be balanced with other steering priorities the vehicle may have, but sometimes helps to avoid difficult mountains.
-If positive, this weight will examine 8 compass directions around the vehicle at distances determined by velocity and TerrainLookahead, and if the terrain is judged to be too high,
+If positive, this weight will examine 8 compass directions around the vehicle at distances determined by velocity and `TerrainLookahead`, and if the terrain is judged to be too high,
 will attempt to angle the aircraft away from the terrain.
 It will still attempt to avoid terrain by gaining altitude if needed.
 
@@ -202,7 +207,7 @@ After water start has been triggered, will disable movement until this altitude 
 Collision detection and avoidance tries to detect and avoid possible collisions with other vehicles using the advanced
 steering system. The AI will always focus on avoiding the most imminent collision threat.
 
-The "CollisionTThreshold" parameter is how distant in time (in seconds)
+The `CollisionTThreshold` parameter is how distant in time (in seconds)
 a potential collision will be considered dangerous -- the less maneuverable your vehicle, the higher you may want to set this.
 Set to `0` if you don't care about collisions.
 
@@ -232,7 +237,7 @@ Avoid collisions with other enemies. Can be expensive to calculate if there are 
 
     AvoidOtherEnemies = true
 
-The weight, or priority, to set on avoiding collisions for the advanced steering system. Set to `0` if you don't care. Any large value (10 is fine in most cases) will set a high priority on avoiding collisions.
+The weight, or priority, to set on avoiding collisions for the advanced steering system. Set to `0` if you don't care. Any large value (`10` is fine in most cases) will set a high priority on avoiding collisions.
 
     AvoidanceWeight = 10
 
@@ -244,7 +249,7 @@ This system allows the vehicle designer to set different weights, or priorities,
 * [Steering Behaviors For Autonomous Characters](http://www.red3d.com/cwr/steer/gdc99/)
 * [Boids](http://www.red3d.com/cwr/boids/)
 
-Note that weights are relative. That means arbitrarily increasing a weight may not do what you expect: two weights at 1 and 2 have the same relative importance as the same weights at 100 and 200.
+Note that weights are relative. That means arbitrarily increasing a weight may not do what you expect: two weights at `1` and `2` have the same relative importance as the same weights at `100` and `200`.
 
 Flocking is an advanced behavior that allows formation-like flying and collision avoidance with friendly vehicles in the "flock".
 See below a pair of demo Cutlass's using flocking to maintain a formation:
@@ -255,7 +260,9 @@ See below a pair of demo Cutlass's using flocking to maintain a formation:
 
 Start using flocking by setting `NeighborRadius` to a positive number (try `300`, for example). This will tell your vehicle to "notice" other friendly vehicles within this radius and form a flock with them.
 
-    NeighborRadius = 0  -- in meters
+```lua
+NeighborRadius = 0  -- in meters
+```
 
 For alignment and cohesion, ignore craft that are going below this speed (in m/s). Useful if one of the vehicle becomes damaged and has to drop out of formation.
 
@@ -267,7 +274,9 @@ with only craft with those names. Names given will match with any vehicle that s
 combination of letters, for example `{'Rapier'}` will match with any vehicle named
 'Rapier', 'Rapier-A', 'Rapier-E', etc.
 
-    FlockWithBlueprintNames = 'all'  -- or, for example {'Rapier', 'Cutlass'}, etc.
+```lua
+FlockWithBlueprintNames = 'all'  -- or, for example {'Rapier', 'Cutlass'}, etc.
+```
 
 The weight given to alignment, or the desire to match headings with friendly craft. Usually `1` or `0` to turn this on or off respectively, but other values are fine too and will change steering priorities accordingly.
 
@@ -317,8 +326,10 @@ The minimum altitude the aircraft will go to when matching altitude
 
 Use vehicle roll to try to "broadside" a target. This is very different to a naval broadside (which uses yaw). This is intended for vehicles which have weapons that don't have good elevation control. Set `BroadsideWithin` to a positive number to start broadsiding when the target is within a certain range -- usually would set to the effective range of your weapons. `BroadsideAngle` then controls the roll angle relative to the target you want your vehicle to take. `0` means you want either side of your vehicle pointed at the enemy. `90` means the bottom of your vehicle, `-90` the top. Roll angles will respect the `MaxRollAngle` setting, in the advanced options. The AI will not attempt to broadside while performing a roll to turn, so this option may work best for vehicles that only yaw to turn.
 
-    BroadsideWithin = 0  -- in meters
-    BroadsideAngle = 0
+```lua
+BroadsideWithin = 0  -- in meters
+BroadsideAngle = 0
+```
 
 ## MISSILE AVOIDANCE OPTIONS
 
@@ -332,7 +343,9 @@ then `WarningMainframe = 0`.
 
 If missiles are within this time-to-target threshold, vehicle will try to run away from them.
 
-    RunAwayTTT = 4  -- in seconds
+```lua
+RunAwayTTT = 4  -- in seconds
+```
 
 You shouldn't need to mess with this. Helps decide when a missile might be dangerous.
 
@@ -367,7 +380,9 @@ The maximum angle to set any particular spinner to. Roll and pitch angles are cu
 thrust. You can use negative angles to reverse the angle direction.
 The VTOL angle is the downwards angle VTOL spinners will be set to in VTOL mode (see next section).
 
-    MaxVTAngle = {30,30,30,90} -- yaw, roll, pitch, VTOL
+```lua
+MaxVTAngle = {30,30,30,90} -- yaw, roll, pitch, VTOL
+```
 
 The maximum speed at which vector thrust spinners change direction. Ranges between `1` and `30`. You will want this at `30` for best vehicle performance but may want to set it lower for the sake of smoother visual changes.
 
