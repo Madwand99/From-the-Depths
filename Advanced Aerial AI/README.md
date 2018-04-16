@@ -11,9 +11,16 @@ The AI mainframe must be set to "On" for this AI to be enabled. Any other settin
 
 #### To use this AI for orbiters:
 
+<details>
+<summary>View answer</summary>
+
 An "orbiter" is a vehicle that continually circles their target instead of making strafing runs. To do this, set "AngleBeforeTurn" to a larger value, usually between 40-90 degrees depending on your vehicles maneuverability. The smaller the number, the tighter the orbit, and the more maneuverable your vehicle will need to be. Most orbiters use only yawing to turn, so you will also usually need to set "AngleBeforeRoll" to 180 so your vehicle won't try to roll.
+<details>
 
 #### To use this AI for naval and land vehicles:
+
+<details>
+<summary>View answer</summary>
 
 * Set `AngleBeforeRoll = 180`, so your ship yaws to turn all the time.
 * Set `CruiseAltitude` to the typical altitude of your vehicle. This isn't strictly necessary to do but it helps the AI not be confused.
@@ -21,30 +28,46 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set `DriveMode` to `0` or `1` for water/land mode controls respectively.
 * You will probably want to make your vehicle an orbiter (see above) so it won't try to strafe the enemy and collide with them.
 * Set other parameters as desired to control the behavior of the ship. Good luck!
+<details>
 
 #### To use this AI for hovercraft, helicopters, or airships:
+
+<details>
+<summary>View answer</summary>
 
 * Set `AngleBeforeRoll = 180`, so your ship yaws to turn all the time.
 * Set `MaxElevationAngle = 0` so that your ship won't pitch up or down.
 * To use thrusters to control altitude, set `UseAltitudeJets = true`.
 * To use helicopter blades to control altitude, choose some spinners to set in `HeliSpinners` and/or some dediblades to set in `HeliDediblades`, or set either of these options to `'all'`, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
+<details>
 
 #### To use this AI for ramming/kamikaze vehicles:
+
+<details>
+<summary>View answer</summary>
 
 * In the dogfighting options, set `MatchTargetAltitude = true` and `MatchAltitudeOffset = 0`. This will make the AI try to match altitudes with the target vehicle. `MatchAltitudeRange` will control how far away the AI will try to do this.
 * Set `UsePredictiveGuidance = true` so the vehicle aims where the target will be, not where it is.
 * Set `AngleBeforeTurn = 0` so that the vehicle heads directly towards the enemy.
 * Set `AvoidTarget = false` OR `CollisionTThreshold = 0` so the collision avoidance code does not try to steer away from a collision.
+<details>
 
 #### How to improve FPS
+
+<details>
+<summary>View answer</summary>
 
 This AI does a lot of "thinking", potentially considering information about every vehicle and enemy missile in play, many times per second. Under some conditions this can make the AI slow to run, reducing FPS -- particularly this can occur in "swarm builds" in which many copies of this AI are operating in parallel. There are several options which can be used to mitigate this problem:
 
 * Turn off missile avoidance (set `WarningMainframe = -1`) if your vehicle doesn't need it.
 * Turn off collision detection if you don't think it will be helpful (set `AvoidFriendlies` and/or `AvoidOtherEnemies` to `false` as appropriate).
 * Finally, and perhaps most importantly, increase `UpdateRate` to `2` or more. This will do the most to help, but it will slightly reduce the responsiveness of your vehicle. Your vehicle will still fly, but it won't update it's desired heading or altitude as often.
+<details>
 
 #### Where to find SubConstruct IDs
+
+<details>
+<summary>View answer</summary>
 
 SubConstruct IDs are needed for the `HeliSpinners`, `VTSpinners`, `VTOLSpinners`, and `ExcludeSpinners` options.
 These IDs are attached to spinner blocks. You can find them in the lower-left hand corner of the Spinner GUI, as follows:
@@ -52,6 +75,7 @@ These IDs are attached to spinner blocks. You can find them in the lower-left ha
 <p align="center">
 <img src="http://i.imgur.com/P3bf6XT.jpg" alt="SubConstruct IDs" width="600"/>
 </p>
+<details>
 
 ## BASIC OPTIONS
 When the vehicle is within `AngleBeforeRoll` degrees of its target, it will try to yaw towards
