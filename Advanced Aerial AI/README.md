@@ -2,22 +2,24 @@ Introducing my version of an advanced aerial AI. This Lua script is intended as 
 
 This AI also includes built-in water start AI, collision avoidance AI, "dogfighting" options, vector thrust options, missile avoidance, predictive interception, VTOL takeoff, flocking, and several other features. It can also be used to control naval vessels, helicopters, and many kinds of hovercraft and airships.
 
-## Usage ##
+## Usage
 
 Put a Lua box down somewhere on your vehicle (it's in the "Control" tab of the build menu). Use "Q" on the Lua box. Copy-and-paste (Ctrl-A,Ctrl-C) the Lua code there into the big edit box in the Lua box. Read the documentation, below. Choose appropriate AI settings for your vehicle. Click "Apply" to save the code and new settings. Watch how your vehicle behaves and continue to tweak the AI settings as desired until you get the behavior you want.
 Note that when you paste this code in, you will only see a bit less than 500 lines of code because that's how many the Lua box can display. However, all the code should be there.
 
 The AI mainframe must be set to "On" for this AI to be enabled. Any other setting will allow the normal AI behaviors (allowing, for example, patrol mode to work).
 
+## Frequently Asked Questions
+
+#### How to use this AI for orbiters?
+
 <details>
-<summary>
-#### To use this AI for orbiters:
-</summary>
+<summary>View answer</summary>
 
 An "orbiter" is a vehicle that continually circles their target instead of making strafing runs. To do this, set "AngleBeforeTurn" to a larger value, usually between 40-90 degrees depending on your vehicles maneuverability. The smaller the number, the tighter the orbit, and the more maneuverable your vehicle will need to be. Most orbiters use only yawing to turn, so you will also usually need to set "AngleBeforeRoll" to 180 so your vehicle won't try to roll.
 </details>
 
-#### To use this AI for naval and land vehicles:
+#### How to use this AI for naval and land vehicles?
 
 <details>
 <summary>View answer</summary>
@@ -30,7 +32,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set other parameters as desired to control the behavior of the ship. Good luck!
 </details>
 
-#### To use this AI for hovercraft, helicopters, or airships:
+#### How to use this AI for hovercraft, helicopters, or airships?
 
 <details>
 <summary>View answer</summary>
@@ -41,7 +43,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * To use helicopter blades to control altitude, choose some spinners to set in `HeliSpinners` and/or some dediblades to set in `HeliDediblades`, or set either of these options to `'all'`, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
 </details>
 
-#### To use this AI for ramming/kamikaze vehicles:
+#### How to use this AI for ramming/kamikaze vehicles?
 
 <details>
 <summary>View answer</summary>
@@ -52,7 +54,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set `AvoidTarget = false` OR `CollisionTThreshold = 0` so the collision avoidance code does not try to steer away from a collision.
 </details>
 
-#### How to improve FPS
+#### How to improve frames per second?
 
 <details>
 <summary>View answer</summary>
@@ -64,7 +66,7 @@ This AI does a lot of "thinking", potentially considering information about ever
 * Finally, and perhaps most importantly, increase `UpdateRate` to `2` or more. This will do the most to help, but it will slightly reduce the responsiveness of your vehicle. Your vehicle will still fly, but it won't update it's desired heading or altitude as often.
 </details>
 
-#### Where to find SubConstruct IDs
+#### Where to find SubConstruct IDs?
 
 <details>
 <summary>View answer</summary>
