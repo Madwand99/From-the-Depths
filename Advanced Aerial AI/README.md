@@ -15,7 +15,7 @@ The AI mainframe must be set to "On" for this AI to be enabled. Any other settin
 <summary>View answer</summary>
 
 An "orbiter" is a vehicle that continually circles their target instead of making strafing runs. To do this, set "AngleBeforeTurn" to a larger value, usually between 40-90 degrees depending on your vehicles maneuverability. The smaller the number, the tighter the orbit, and the more maneuverable your vehicle will need to be. Most orbiters use only yawing to turn, so you will also usually need to set "AngleBeforeRoll" to 180 so your vehicle won't try to roll.
-<details>
+</details>
 
 #### To use this AI for naval and land vehicles:
 
@@ -28,7 +28,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set `DriveMode` to `0` or `1` for water/land mode controls respectively.
 * You will probably want to make your vehicle an orbiter (see above) so it won't try to strafe the enemy and collide with them.
 * Set other parameters as desired to control the behavior of the ship. Good luck!
-<details>
+</details>
 
 #### To use this AI for hovercraft, helicopters, or airships:
 
@@ -50,7 +50,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 * Set `UsePredictiveGuidance = true` so the vehicle aims where the target will be, not where it is.
 * Set `AngleBeforeTurn = 0` so that the vehicle heads directly towards the enemy.
 * Set `AvoidTarget = false` OR `CollisionTThreshold = 0` so the collision avoidance code does not try to steer away from a collision.
-<details>
+</details>
 
 #### How to improve FPS
 
@@ -62,7 +62,7 @@ This AI does a lot of "thinking", potentially considering information about ever
 * Turn off missile avoidance (set `WarningMainframe = -1`) if your vehicle doesn't need it.
 * Turn off collision detection if you don't think it will be helpful (set `AvoidFriendlies` and/or `AvoidOtherEnemies` to `false` as appropriate).
 * Finally, and perhaps most importantly, increase `UpdateRate` to `2` or more. This will do the most to help, but it will slightly reduce the responsiveness of your vehicle. Your vehicle will still fly, but it won't update it's desired heading or altitude as often.
-<details>
+</details>
 
 #### Where to find SubConstruct IDs
 
@@ -75,7 +75,7 @@ These IDs are attached to spinner blocks. You can find them in the lower-left ha
 <p align="center">
 <img src="http://i.imgur.com/P3bf6XT.jpg" alt="SubConstruct IDs" width="600"/>
 </p>
-<details>
+</details>
 
 ## BASIC OPTIONS
 When the vehicle is within `AngleBeforeRoll` degrees of its target, it will try to yaw towards
