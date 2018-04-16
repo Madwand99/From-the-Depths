@@ -665,3 +665,4 @@ OrbitSpawn = true
 * [From the Depths on Steam](http://store.steampowered.com/app/268650/From_the_Depths/)
 * [Forum thread for this AI where you can go for help.](http://www.fromthedepthsgame.com/forum/showthread.php?tid=9108) - Note: if your issue is "my plane doesn't fly", make sure it DOES fly with the normal aerial AI -- this AI can't overcome bad design, though it can help in some cases. Exception: vector thrust. Normal AI can't do that (without a lot of ACBs anyway). This code is not magic and can't make a plane fly that couldn't otherwise.
 * [Draba's hover AI](http://www.fromthedepthsgame.com/forum/showthread.php?tid=15393) - My code borrows PID control code from this AI. For some types of vehicles -- particularly some hovercraft -- Draba's AI is very helpful.
+* [From the Depths Discord](https://discord.gg/pKgnWdf) I can often be found here. Feel free to message me about this AI.
