@@ -59,45 +59,63 @@ When the vehicle is within `AngleBeforeRoll` degrees of its target, it will try 
 If `UsePreferredSide = true`, use a positive value of `AngleBeforeTurn` to approach targets on the right,
 a negative value to approach targets on the left. Otherwise, always use a positive value. 
 
-    AngleBeforeTurn = 10
+```lua
+AngleBeforeTurn = 10
+```
 
 If the vehicle is at greater angle than this from it's target, it will try to roll towards it.
 (and stop rolling when `AngleBeforeTurn` is reached).
 Set this to `180` to NEVER use rolling to turn the vehicle.
 
-    AngleBeforeRoll = 30
+```lua
+AngleBeforeRoll = 30
+```
 
 Outside of this distance, the vehicle will try to close on it's target.
 NOTE: All distances are measured along the ground, in meters.
 
-    AttackRunDistance = 600
+```lua
+AttackRunDistance = 600
+```
 
 Within this distance, the vehicle will just try to go straight until `AttackRunDistance` is triggered.
 
-    AbortRunDistance = 300
+```lua
+AbortRunDistance = 300
+```
 
 Outside of this distance, the AI will try to intercept its target by attempting
 to predict it's future position.
 
-    ClosingDistance = 1000
+```lua
+ClosingDistance = 1000
+```
 
 If `AttackRunDistance` hasn't been triggered within this time, force an attack run.
 
-    ForceAttackTime = 15
+```lua
+ForceAttackTime = 15
+```
 
 Altitude we will try to cruise at by default.
 
-    CruiseAltitude = 100
+```lua
+CruiseAltitude = 100
+```
 
 Maximum (straight-line) distance AI will try to permit vehicle to wander from it's target. This is mostly useful for tournaments that impose a distance limit, and vehicles that might run away for various reasons (i.e. missile evasion). After the vehicle goes beyond this limit, will impose an increasingly greater steering force to try to get the vehicle pointed back on target.
 
-    MaxDistance = 5000
+```lua
+MaxDistance = 5000
+```
 
 Maximum positive and negative pitch angles AI will attempt to use while climbing or descending (respectively).
 Also limits yaw when vehicle is rolled on it's side.
 
-    MaxPitch = 30
-    MinPitch = -15
+```lua
+MaxPitch = 30
+MinPitch = -15
+```
 
 ## SPEED CONTROL
 
@@ -105,16 +123,22 @@ This AI has various options for controlling speed during various conditions of i
 
 The minimum speed (in m/s) you want your vehicle to go. If your speed ever goes to less than this (perhaps due to low throttle settings and/or battle damage), the throttle will be temporarily set to maximum until you are above the minimum speed.
 
-    MinimumSpeed = 0
+```lua
+MinimumSpeed = 0
+```
 
 The maximum speed you want your aircraft to go. If this is exceeded, the AI will temporarily
 reduce throttle to 10% of maximum. Some tournaments specify a maximum speed, making this limit helpful.
 
-    MaximumSpeed = 999
+```lua
+MaximumSpeed = 999
+```
 
 Maximum throttle we'll cruise at when no enemies are present.
 
-    CruiseThrottle = 1
+```lua
+CruiseThrottle = 1
+```
 
 Throttle we'll use when engaged with enemies.
 
@@ -142,11 +166,15 @@ My thanks to Draba, goduranus, and CP75 for their previous work on PID controlle
 
 A list of subconstruct ID's for the individual spinners you want to use for altitude control on a helicopter. Use `'all'` if you want to use all spinners. These do NOT include Dediblades; use the next setting for that.
 
-    HeliSpinners = {}
+```lua
+HeliSpinners = {}
+```
 
 A list of ID's for the individual dediblades you want to use for altitude control on a helicopter. Use `'all'` if you want to use all dediblades. Right now you'll have to guess a bit to test the index; they are usually numbered from `0` starting from the first dediblade you place on the hull.
 
-    HeliDediblades = {}
+```lua
+HeliDediblades = {}
+```
 
 The helicopter blade speeds to use for controlling altitude. These should range between `-30` to `30`.
 Use AltitudeClamp to control how smoothly these speeds are transitioned between
@@ -161,46 +189,64 @@ MaxHelicopterBladeSpeed = 30 -- when gaining altitude
 
 Allow a vehicle to avoid terrain by temporarily increasing it's altitude.
 
-    AvoidTerrain = true
+```lua
+AvoidTerrain = true
+```
 
 The minimum relative altitude a vehicle will maintain above terrain. Higher priority than MaxAltitude.
 
-    MinAltitude = 50
+```lua
+MinAltitude = 50
+```
 
 The maximum altitude above sea-level the vehicle will attempt.
 
-    MaxAltitude = 400
+```lua
+MaxAltitude = 400
+```
 
 A set of multipliers on current velocity; how far we look ahead to avoid terrain.
 We'll look ahead at each of these points to see if terrain is in the way. Most vehicles won't need to change these values.
 
-    TerrainLookahead = {0,1,2,4}
+```lua
+TerrainLookahead = {0,1,2,4}
+```
 
 Cap vehicle throttle at this value when a possible collision is sensed.
 
-    MaxTerrainThrottle = 1
+```lua
+MaxTerrainThrottle = 1
+```
 
 Use the advanced steering system to avoid difficult terrain by flying around, instead of over. Not guaranteed to work as this weight governs a priority that must be balanced with other steering priorities the vehicle may have, but sometimes helps to avoid difficult mountains.
 If positive, this weight will examine 8 compass directions around the vehicle at distances determined by velocity and `TerrainLookahead`, and if the terrain is judged to be too high,
 will attempt to angle the aircraft away from the terrain.
 It will still attempt to avoid terrain by gaining altitude if needed.
 
-    TerrainAvoidanceWeight = 1
+```lua
+TerrainAvoidanceWeight = 1
+```
 
 ## WATER START OPTIONS
 
 Water start will deploy balloons when the center of mass is lower than this.
 If your vehicle has no water start balloons, set this to some large negative value.
 
-    DeployAlt = 5
+```lua
+ DeployAlt = 5
+```
 
 Water start will release balloons when the center of mass is higher than this.
 
-    ReleaseAlt = 15
+```lua
+ReleaseAlt = 15
+```
 
 After water start has been triggered, will disable movement until this altitude has been reached.
 
-    EnableEnginesAlt = 10
+```lua
+EnableEnginesAlt = 10
+```
 
 ## COLLISION AVOIDANCE OPTIONS
 
@@ -211,35 +257,51 @@ The `CollisionTThreshold` parameter is how distant in time (in seconds)
 a potential collision will be considered dangerous -- the less maneuverable your vehicle, the higher you may want to set this.
 Set to `0` if you don't care about collisions.
 
-    CollisionTThreshold = 5
+```lua
+CollisionTThreshold = 5
+```
 
 How large your vehicle is. Usually set it to half the longest dimension.
 
-    CraftRadius = 27
+```lua
+CraftRadius = 27
+```
 
 How much buffer space to give between itself and other vehicles. Higher values are safer.
 
-    BufferSize = 50
+```lua
+BufferSize = 50
+```
 
 We don't have any way to know the size of an enemy in Lua, so you can estimate it here. Set this value to half the largest dimension of the enemies you expect to fight.
 
-    EnemyRadius = 50
+```lua
+EnemyRadius = 50
+```
 
 Use the advanced steering system to avoid collisions with friendly vehicles. Can be expensive to calculate if you have many friendly vehicles in play.
 
-    AvoidFriendlies = true
+```lua
+AvoidFriendlies = true
+```
 
 Avoid collisions with your target. Set to `false` if you have a melee vehicle.
 
-    AvoidTarget = true
+```lua
+AvoidTarget = true
+```
 
 Avoid collisions with other enemies. Can be expensive to calculate if there are many enemy vehicles in play.
 
-    AvoidOtherEnemies = true
+```lua
+AvoidOtherEnemies = true
+```
 
 The weight, or priority, to set on avoiding collisions for the advanced steering system. Set to `0` if you don't care. Any large value (`10` is fine in most cases) will set a high priority on avoiding collisions.
 
-    AvoidanceWeight = 10
+```lua
+AvoidanceWeight = 10
+```
 
 ## STEERING OPTIONS
 
@@ -280,27 +342,39 @@ FlockWithBlueprintNames = 'all'  -- or, for example {'Rapier', 'Cutlass'}, etc.
 
 The weight given to alignment, or the desire to match headings with friendly craft. Usually `1` or `0` to turn this on or off respectively, but other values are fine too and will change steering priorities accordingly.
 
-    AlignmentWeight = 1
+```lua
+AlignmentWeight = 1
+```
 
 The weight given to cohesion, or the desire to come closer to friendly craft.
 
-    CohesionWeight = 1
+```lua
+CohesionWeight = 1
+```
 
 The weight given to separation, or the desire to avoid coming too close to other friendly vehicles.
 
-    SeparationWeight = 1
+```lua
+SeparationWeight = 1
+```
 
 A cohesion weight for injured vehicles. May be useful for "medic ships".
 
-    InjuredWeight = 0
+```lua
+InjuredWeight = 0
+```
 
 A cohesion weight for friendly vehicles at ranges outside NeighborRadius. It isn't necessary to use this, but it will help vehicles "find each other" if they get separated.
 
-    LongRangeWeight = .5
+```lua
+LongRangeWeight = .5
+```
 
 The weight given to the "normal" target-specific behaviors of attack, escape, etc. Usually you should leave this at `1`. A value of `0` means it ignores enemies when it comes to navigation.
 
-    TargetWeight = 1
+```lua
+TargetWeight = 1
+```
 
 ## "DOGFIGHTING" OPTIONS
 
@@ -309,20 +383,28 @@ The weight given to the "normal" target-specific behaviors of attack, escape, et
 Whether or not to try to match our altitude to the target.
 If set to `false`, will use `CruiseAltitude` during combat.
 
-    MatchTargetAltitude = false
+```lua
+MatchTargetAltitude = false
+```
 
 Range within which to attempt altitude matching. Beyond this range, uses `CruiseAltitude`.
 
-    MatchAltitudeRange = 1000
+```lua
+MatchAltitudeRange = 1000
+```
 
 Altitude in meters above (or below, if negative) the target the vehicle will attempt to attain.
 Altitude will still be constrained by `MinAltitude` and `MaxAltitude` terrain avoidance constraints.
 
-    MatchAltitudeOffset = 0
+```lua
+MatchAltitudeOffset = 0
+```
 
 The minimum altitude the aircraft will go to when matching altitude
 
-    MinMatchingAltitude = 100
+```lua
+MinMatchingAltitude = 100
+```
 
 Use vehicle roll to try to "broadside" a target. This is very different to a naval broadside (which uses yaw). This is intended for vehicles which have weapons that don't have good elevation control. Set `BroadsideWithin` to a positive number to start broadsiding when the target is within a certain range -- usually would set to the effective range of your weapons. `BroadsideAngle` then controls the roll angle relative to the target you want your vehicle to take. `0` means you want either side of your vehicle pointed at the enemy. `90` means the bottom of your vehicle, `-90` the top. Roll angles will respect the `MaxRollAngle` setting, in the advanced options. The AI will not attempt to broadside while performing a roll to turn, so this option may work best for vehicles that only yaw to turn.
 
@@ -339,7 +421,9 @@ Set `WarningMainframe = -1` to ignore missiles. Set it to the index
 of the mainframe with missile warners, if you have missile warners. If you only have one mainframe,
 then `WarningMainframe = 0`.
 
-    WarningMainframe = -1
+```lua
+WarningMainframe = -1
+```
 
 If missiles are within this time-to-target threshold, vehicle will try to run away from them.
 
@@ -349,15 +433,21 @@ RunAwayTTT = 4  -- in seconds
 
 You shouldn't need to mess with this. Helps decide when a missile might be dangerous.
 
-    DangerRadius = 20
+```lua
+DangerRadius = 20
+```
 
 The speed (in m/s) your ship is usually able to go when dodging missiles.
 
-    NormalSpeed = 100
+```lua
+NormalSpeed = 100
+```
 
 The weight (or priority) to give dodging missiles for the advanced steering system. This is on a *per missile* basis, so a large missile barrage is considered very high-priority in total. Also, the closer to impact a missile is, the more importance it is given. `0` will ignore missiles, larger values will give running away increasingly high priority (`2` works fine in my tests, though you may want it higher if even one missile is dangerous to your vehicle).
 
-    DodgingWeight = 2
+```lua
+DodgingWeight = 2
+```
 
 ## VECTOR THRUST OPTIONS
 
@@ -374,7 +464,9 @@ list as follows: `{0,1,2}`. Spinners placed vertically are for yaw. Spinners pla
 control roll and pitch (so I suggest placing them farther to the left and right of your CoM).
 Also see the `ExcludeSpinners` option to specify a list of spinners to exclude, if this is set to `'all'`.
 
-    VTSpinners = nil
+```lua
+VTSpinners = nil
+```
 
 The maximum angle to set any particular spinner to. Roll and pitch angles are cumulative (so make sure they sum to at most 90 degrees). The maximum angle you can specify is 90 degrees. Set to `0` to not use that particular kind of vector
 thrust. You can use negative angles to reverse the angle direction.
@@ -386,7 +478,9 @@ MaxVTAngle = {30,30,30,90} -- yaw, roll, pitch, VTOL
 
 The maximum speed at which vector thrust spinners change direction. Ranges between `1` and `30`. You will want this at `30` for best vehicle performance but may want to set it lower for the sake of smoother visual changes.
 
-    VTSpeed = 30
+```lua
+VTSpeed = 30
+```
 
 ## VTOL/HOVER OPTIONS
 
@@ -394,13 +488,17 @@ While not yet as extensive as the hover options afforded by some other scripts, 
 
 Use jets pointing up or down to assist in controlling altitude. 
 
-    UseAltitudeJets = false
+```lua
+UseAltitudeJets = false
+```
 
 An option for airships is to allow the AI to manually control downward-pointing engine drive
 fractions. This option can be turned off above a certain speed (in m/s) for VTOL takeoffs.
 Set `UseVTOLBeneathSpeed` to a large number to use VTOL all the time
 
-    UseVTOLBeneathSpeed = 0
+```lua
+ UseVTOLBeneathSpeed = 0
+```
 
 A list of engine indices to use for VTOL. Set to `'all'` to use all downward-pointing engines.
 Use a list format, i.e. `{0,1,2,3}` to specify exact engine indices -- generally engines are numbered in the order you place them on the vehicle. Engines may be attached to
@@ -412,7 +510,9 @@ You can (and should) set the drive fractions of each engine you want to use with
 on the engine itself. The drive fraction on each engine specifies the maximum amount of
 power you want to use on that engine.
 
-    VTOLEngines = nil
+```lua
+VTOLEngines = nil
+```
 
 The set of VTOL SubConstruct spinner IDs to use when in VTOL mode. Set to `'all'` to select all spinners capable of
 pointing downwards. Otherwise, choose a list of spinner SubConstruct IDs as follows: `{0,1,2,3}`.
@@ -420,8 +520,9 @@ VTOL spinners will angle downwards at their given MaxVTAngle when in VTOL mode, 
 they will point backwards and operate as normal vectored thrust.
 Also see the `ExcludeSpinners` setting to specify a list of spinners to exclude, if this is set to `'all'`.
 
-    VTOLSpinners = 'all'
-
+```lua
+VTOLSpinners = 'all'
+```
 
 ## ADVANCED OPTIONS
 
@@ -429,23 +530,31 @@ These are options most users shouldn't need to change.
 
 Set to `0` for water mode, `1` for land mode, `2` for air mode.
 
-    DriveMode = 2
+```lua
+DriveMode = 2
+```
 
 How often to recalculate heading and altitude. At `1` (the minimum), these will recalculate every update. At `10`,
 they will recalculate every 10th update. The lower UpdateRate is, the more
 responsive the vehicle will be, but it will also take more processing time. Thus higher values may increase FPS.
 See more information in [How to improve FPS](https://github.com/Madwand99/From-the-Depths/tree/master/Advanced%20Aerial%20AI#how-to-improve-fps).
 
-    UpdateRate = 1
+```lua
+UpdateRate = 1
+```
 
 This AI automatically clamps `MaxPitch` and `MinPitch` according to how near the aircraft is to it's target altitude to prevent overshooting when changing altitude. Higher values of `AltitudeClamp` decrease this effect, allowing steeper changes in altitude. Lower values help prevent overshooting. AltitudeClamp also controls how gradually airships approach their target altitude when using altitude jets or helicopter blades.
 
-    AltitudeClamp = .2
+```lua
+AltitudeClamp = .2
+```
 
 The default roll angle to maintain. Set it to `90` to have the vehicle usually on it's side.
 You may want to set `AngleBeforeTurn = 180` if you do this, so you never yaw.
 
-    DefaultRollAngle = 0
+```lua
+DefaultRollAngle = 0
+```
 
 There are three kinds of ways this AI can use to control forward speed (i.e., main drive):
 * `MainDriveControlType = 0`: Uses standard throttle control. Most vehicles will want this option.
@@ -458,26 +567,36 @@ thrust continues to operate at full power for greatest possible maneuverability.
 
 Choose whatever works for you. I suggest `0` for most vehicles, but vehicles using vector thrust may want to try `2`. This decision only matters if Thottle values you choose aren't always `1`.
 
-    MainDriveControlType = 0
+```lua
+MainDriveControlType = 0
+```
 
 The maximum roll angle your vehicle will take during a roll. Set this lower if your vehicle is
 going into the sea during a roll.
 
-    MaxRollAngle = 120
+```lua
+MaxRollAngle = 120
+```
 
 How close you want your aircraft to be to the "desired" roll angle before pitching up. Set this too
 high and you may gain or lose too much altitude during a turn.
 
-    RollTolerance = 30
+```lua
+RollTolerance = 30
+```
 
 Set this to true if you are interested in knowing what the AI is "thinking" as it operates.
 
-    DebugMode = false
+```lua
+DebugMode = false
+```
 
 Prefer to approach the enemy on only one side of the aircraft or not. Set `AngleBeforeTurn` positive
 or negative to choose the side.
 
-    UsePreferredSide = false
+```lua
+UsePreferredSide = false
+```
 
 Predictive guidance tries to guess where the enemy will be by the time the aircraft will reach it,
 and head in that direction instead of the current position of the enemy. Set this to `true`
@@ -486,7 +605,9 @@ circle" on a fast orbiter, or if you want to ram the enemy. Set to `false` if it
 to orient yourself in relation to the enemies current position during the attack run, for example if
 all your weapons are in a fixed-forward firing position.
 
-    UsePredictiveGuidance = true
+```lua
+UsePredictiveGuidance = true
+```
 
 `AltitudeOffset` is useful when you wish to create multiple vehicles of the same type, and you
 don't want to individually set all the various altitude settings so they won't crash into each
@@ -494,7 +615,9 @@ other. This value adjusts `CruiseAltitude`, `MaxAltitude`, `MatchAltitudeOffset`
 simultaneously. You can also give it two table values, e.g. `{0,100}`. This will randomly generate
 an offset in the range between 0-100, so your aircraft may be less likely to collide with others of it's kind.
 
-    AltitudeOffset = 0
+```lua
+AltitudeOffset = 0
+```
 
 `AngleOfEscape` is the angle relative to the current heading that is set when going from "attack mode" to "escape mode".
 It is set once when entering escape mode, and does not adjust to enemy movements.
@@ -502,7 +625,9 @@ By default, it is set to `0`, which means to keep flying in the original directi
 you like though, for example `AngleOfEscape = 90` will turn off at 90 degrees, or
 `AngleOfEscape = 180` will have the vehicle try to turn around. Note that if the steering system has other priorities, this escape angle is likely to be ignored.
 
-    AngleOfEscape = 0
+```lua
+AngleOfEscape = 0
+```
 
 An additional option for helicopters, vector thrust, and VTOL, `ExcludeSpinners` allows you
 to specify spinner SubConstruct IDs to be excluded from use by this AI (if you use the `'all'` option
@@ -510,11 +635,15 @@ for `VTSpinners` or `VTOLSpinners`). If used, this must be a comma-delimited lis
 by curly braces, for example `ExcludeSpinners = {0,5}`. Note that `HeliSpinners` are automatically excluded
 from use by vector thrust if they are specified.
 
-    ExcludeSpinners = nil
+```lua
+ExcludeSpinners = nil
+```
 
 Whether to orbit the spawn point when there are no enemies, or just fly off in a straight line
 
-    OrbitSpawn = true
+```lua
+OrbitSpawn = true
+```
 
 ## Useful links
 
