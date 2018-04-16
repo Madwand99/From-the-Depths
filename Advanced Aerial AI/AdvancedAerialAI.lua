@@ -20,18 +20,24 @@ AbortRunDistance = 300
 ClosingDistance = 1500
 ForceAttackTime = 15
 CruiseAltitude = 100
-MaxDistance = 1000
+MaxDistance = 5000
 MaxPitch = 30
 MinPitch = -15
 
 -- SPEED CONTROL
-MinimumSpeed = 50
+MinimumSpeed = 0
 MaximumSpeed = 999
 CruiseThrottle = 1
 AttackRunThrottle = 1
 EscapeThrottle = 1
 RollingThrottle = 1
 ClosingThrottle = 1
+
+-- PID SETTINGS
+--                   P,        D,       I,    OutMax,   OutMin,    IMax,    IMin
+yawPIDData      = {0.2,     0.05,     0.0,         1,       -1,       1,      -1}
+rollPIDData     = {0.2,     0.05,     0.0,         1,       -1,       1,      -1}
+pitchPIDData    = {0.2,     0.02,     0.0,         1,       -1,       1,      -1}
 
 -- HELICOPTER OPTIONS
 HeliSpinners = {}
@@ -91,8 +97,6 @@ DodgingWeight = 2
 -- VECTOR THRUST OPTIONS
 VTSpinners = nil
 MaxVTAngle = {40,40,40,90} -- yaw, roll, pitch, VTOL
-VTProportional = {1,1,1}
-VTDelta = {.1,.1,0}
 VTSpeed = 30
 
 --VTOL/HOVER OPTIONS
@@ -105,9 +109,6 @@ VTOLSpinners = 'all'
 DriveMode = 2
 UpdateRate = 1
 AltitudeClamp = .2
-PitchDamping = 90
-YawDamping = 90
-RollDamping = 45
 MainDriveControlType = 0
 MaxRollAngle = 90
 RollTolerance = 30
@@ -120,12 +121,9 @@ ExcludeSpinners = nil
 OrbitSpawn = true
 
 --Static variables. Do not change these.
-DRIVELEFT = 0
-DRIVERIGHT = 1
-ROLLLEFT = 2
-ROLLRIGHT = 3
-DRIVEUP = 4
-DRIVEDOWN = 5
+YAWDRIVE = 1
+ROLLDRIVE = 2
+PITCHDRIVE = 3
 DRIVEMAIN = 8
 DriveTypeDesc = {'Left','Right','RLeft','RRight','PUp','PDown','','','Main'}
 
@@ -147,37 +145,78 @@ EngineDF = {}
 SpinnerStartRotations={}
 DYaw = 0
 NumEngines = 0
-ReduceThrottle = 1
 DesiredAltitude = 0
 DesiredAzimuth = 0
 OverTerrain = false
 Rolling = false
 Throttle=CruiseThrottle
 Ticks = 0
- 
+VTPower = {0,0,0,0} -- yaw, roll, pitch, VTOL
+
+function InitPID(pidData)
+    PID = {}
+    PID.Kp            = pidData[1]
+    PID.Kd            = pidData[2]
+    PID.Ki            = pidData[3]
+    PID.OutMax        = pidData[4]
+    PID.OutMin        = pidData[5]
+    PID.IMax          = pidData[6]
+    PID.IMin          = pidData[7]
+    PID.integral      = 0
+    PID.previousError = 0
+
+    return PID
+end
+
+function InitPIDs()
+    rollPID     = InitPID(rollPIDData)
+    pitchPID    = InitPID(pitchPIDData)
+    yawPID      = InitPID(yawPIDData)
+end
+
+function GetPIDOutput(SetPoint, ProcessVariable, PID)
+    local error     = SetPoint - ProcessVariable
+    local timeDelta = 0.025
+    local derivative
+    local output
+
+    PID.integral = PID.integral + (error*timeDelta) * PID.Ki
+    if (PID.integral > PID.IMax) then PID.integral = PID.IMax end
+    if (PID.integral < PID.IMin) then PID.integral = PID.IMin end
+
+    derivative = (error - PID.previousError)/timeDelta
+
+    output = PID.Kp*error + PID.Kd*derivative + PID.integral
+    if (output > PID.OutMax) then output = PID.OutMax end
+    if (output < PID.OutMin) then output = PID.OutMin end
+
+    PID.previousError = error
+    return output,PID
+end
+
 --Try to pitch (or yaw, if necessary) to a given angle of elevation
 function AdjustPitchTo(I,DesiredPitch)
-  local PitchSpeedCheck = math.abs(DesiredPitch-Pitch)/PitchDamping
-  local YawSpeedCheck = math.abs(DesiredPitch-Pitch)/YawDamping
+  pitchInput,pitchPID = GetPIDOutput(DesiredPitch, Pitch, pitchPID)
+
   if (Pitch > DesiredPitch) then
     if (math.abs(Roll)>135) then
-      Control(I,DRIVEUP,PitchSpeedCheck,DPitch)
+      Control(I, PITCHDRIVE, pitchInput)
     elseif (Roll<-45) then
-      Control(I,DRIVERIGHT,YawSpeedCheck,DYaw)
+      Control(I, YAWDRIVE, pitchInput)
     elseif (Roll>45) then
-      Control(I,DRIVELEFT,YawSpeedCheck,-DYaw)
+      Control(I, YAWDRIVE, -pitchInput)
     elseif (math.abs(Roll)<45 and state~="rolling") then
-      Control(I,DRIVEDOWN,PitchSpeedCheck,-DPitch)
+      Control(I, PITCHDRIVE, pitchInput)
     end
   elseif (Pitch < DesiredPitch) then
     if (math.abs(Roll)>135 and state~="rolling") then
-      Control(I,DRIVEDOWN,PitchSpeedCheck,-DPitch)
+      Control(I, PITCHDRIVE, pitchInput)
     elseif (Roll<-45) then
-      Control(I,DRIVELEFT,YawSpeedCheck,-DYaw)
+      Control(I, YAWDRIVE, pitchInput)
     elseif (Roll>45) then
-      Control(I,DRIVERIGHT,YawSpeedCheck,DYaw)
+      Control(I, YAWDRIVE, -pitchInput)
     elseif (math.abs(Roll)<45) then
-      Control(I,DRIVEUP,PitchSpeedCheck,DPitch)
+      Control(I, PITCHDRIVE, pitchInput)
     end
   end
 end
@@ -321,19 +360,14 @@ function RollTowardsAzimuth(I,Azimuth,NewAltitude)
   AdjustRollToAngle(I,RollAngle)
   
   if (sign(Roll)==sign(Azimuth) and Roll >= RollAngle-RollTolerance and Roll <= RollAngle+RollTolerance) then -- start pitching
-    Control(I, DRIVEUP,1,0)
+    Control(I, PITCHDRIVE, 1)
   end
 end
 
 -- Roll the vehicle to a specified roll angle
 function AdjustRollToAngle(I,Angle)
-  local RollSpeedCheck = math.abs(Angle-Roll)/RollDamping
-  if (Roll < Angle) then
-    Control(I, ROLLLEFT,RollSpeedCheck,DRoll)
-  elseif (Roll > Angle) then
-    Control(I, ROLLRIGHT,RollSpeedCheck,-DRoll)
-  end
-  --I:LogToHud(string.format("%.2f %.2f %.2f %.2f", Angle, Roll, RollSpeedCheck, DRoll))
+  rollInput,rollPID = GetPIDOutput(Angle, Roll, rollPID)
+  Control(I, ROLLDRIVE, rollInput)
 end
 
 -- transform an absolute azimuth into one relative to the nose of the vehicle
@@ -346,12 +380,8 @@ end
 -- Yaw the vehicle towards a given aziumth (relative to the vehicle's facing)
 function YawTowardsAzimuth(I,Azimuth)
   if (math.abs(Roll)<30) then
-    local YawSpeedCheck = math.abs(Azimuth)/YawDamping
-    if (Azimuth > 0) then
-      Control(I, DRIVELEFT,YawSpeedCheck,-DYaw)
-    elseif (Azimuth < 0) then
-      Control(I, DRIVERIGHT,YawSpeedCheck,DYaw)
-    end
+    yawInput,yawPID = GetPIDOutput(0, Azimuth, yawPID)
+    Control(I, YAWDRIVE, -yawInput)
     return true
   end
   return false
@@ -410,8 +440,6 @@ function WaterStartCheck(I)
 end
 
 function SetSpeed(I, Throttle)
-  Throttle=Throttle*ReduceThrottle
-
   if (Speed>MaximumSpeed) then Throttle=.1
   elseif (Speed<MinimumSpeed) then Throttle=1 end
   if MainDriveControlType==1 then
@@ -428,13 +456,11 @@ function limiter(p,l)
   return math.min(l,math.max(-l,p))
 end
 
-function Control(I, Type, SpeedCheck, Delta)
-  local DoFType = math.floor(Type/2)+1
-  if (SpeedCheck>Delta) then
-    I:RequestControl(DriveMode, Type, 1)
-    DriveDesc[DoFType] = DriveTypeDesc[Type+1]
-  end
-  VTPower[DoFType] = (Type%2*2-1)*limiter(SpeedCheck*VTProportional[DoFType]-Delta*VTDelta[DoFType],1)
+function Control(I, DoFType, Impulse)
+  local Type = DoFType*2 - (Impulse<0 and 1 or 2)
+  I:RequestControl(DriveMode, Type, math.abs(Impulse))
+  DriveDesc[DoFType] = DriveTypeDesc[Type+1]
+  VTPower[DoFType] = -Impulse
 end
 
 function ComputeSpinners(Rotation, Spinners, Axis)
@@ -595,7 +621,7 @@ function FindConvergence(I, tPos, tVel, wPos, wSpeed, minConv)
    local b = -2 * tSpeed * distance * math.cos(math.rad(targetAngle))
    local c = distance^2
    local det = math.sqrt(b^2-4*a*c)
-   local ttt = distance / minConv
+   local ttt = distance / (minConv+.01)
 
    if det > 0 then
       local root1 = math.min((-b + det)/(2*a), (-b - det)/(2*a))
@@ -675,8 +701,7 @@ function NameMatches(Name)
 end
 
 function SteerToAvoidCollisions(I)
-  local steer = 0
-  local ThreatPos, ThreatCoM, ThreatVel
+  local ThreatCoM, ThreatVel
   local minTime = CollisionTThreshold
   local OwnVelocity = ForwardV * Speed
 
@@ -685,12 +710,12 @@ function SteerToAvoidCollisions(I)
     for f = 0, FCount-1 do
       local FInfo = I:GetFriendlyInfo(f)
       if FInfo.Valid then
-        local time, dist, tpos = GetApproach(OwnVelocity, FInfo.Velocity, FInfo.CenterOfMass)
+        local time, dist = GetApproach(OwnVelocity, FInfo.Velocity, FInfo.CenterOfMass)
         if time>=0 and time<minTime then
           fsize = math.max(unpack(FInfo.PositiveSize-FInfo.NegativeSize))
           if dist < CraftRadius+fsize/2+BufferSize then
             minTime=time
-            ThreatPos, ThreatCoM, ThreatVel = tpos, FInfo.CenterOfMass, FInfo.Velocity
+            ThreatCoM, ThreatVel = FInfo.CenterOfMass, FInfo.Velocity
           end
         end
       end
@@ -711,21 +736,30 @@ function SteerToAvoidCollisions(I)
     end
   end
 
+  return Dodge(I, minTime, ThreatVel, ThreatCoM)
+end
+
+-- Given a time-to-target, threat velocity,
+-- and threat CoM, returns a dodge vector
+function Dodge(I, TTT, TVel, TCoM)
   local side = I:GetConstructRightVector()
-  if minTime<CollisionTThreshold then
-    local parallelness = Vector3.Dot(ForwardV, ThreatVel.normalized)
+  local steer = 0
+
+  if TTT<CollisionTThreshold then
+    local parallelness = Vector3.Dot(ForwardV, TVel.normalized)
     
     if parallelness<-0.707 then  -- head-on collision
-      local offset=ThreatPos-CoM
+      local TFPos=TCoM+TVel*TTT
+      local offset=TFPos-CoM
       local sideDot=Vector3.Dot(offset,side)
       steer = sideDot>0 and -1 or 1
     else--if parallelness>0.707 then  -- parallel paths
-      local offset=ThreatCoM-CoM
+      local offset=TCoM-CoM
       local sideDot=Vector3.Dot(offset,side)
       steer = sideDot>0 and -1 or 1      
 --    else  --perpendicular paths
---      if ThreatVel.magnitude<=Speed then
---        local sideDot=Vector3.Dot(side,ThreatVel)
+--      if TVel.magnitude<=Speed then
+--        local sideDot=Vector3.Dot(side,TVel)
 --        steer = sideDot>0 and -1 or 1
 --      end
     end    
@@ -736,7 +770,7 @@ end
 
 function GetApproach(OwnVelocity, TVelocity, TPos)
   local relVelocity = TVelocity - OwnVelocity
-  local relSpeed = relVelocity.magnitude
+  local relSpeed = relVelocity.magnitude+.01
 
   if relSpeed==0 then return 0 end
 
@@ -749,38 +783,46 @@ function GetApproach(OwnVelocity, TVelocity, TPos)
   local myFinal = CoM + ForwardV*Speed*time
   local oFinal = TPos + TVelocity*time
 
-  return time, (myFinal-oFinal).magnitude, oFinal
+  return time, (myFinal-oFinal).magnitude
 end
 
 function Flocking(I, Azimuth, Escaping)
-  if NeighborRadius==0 then return Azimuth end
-
-  local FCount = I:GetFriendlyCount()
   local A = Vector3(0,0,0)
   local C,S,J,L,E,D,M = A,A,A,A,A,A,A
   local Near,Aligning,Injured,Far,Terrain=0,0,0,0,0
 
   local V=SteerToAvoidCollisions(I)*AvoidanceWeight
 
-  for f = 0, FCount-1 do
-    local FInfo = I:GetFriendlyInfo(f)
-    if FInfo.Valid then
-      local Dist=FInfo.CenterOfMass-CoM
-      if Dist.magnitude<NeighborRadius then
-        if FInfo.Velocity.magnitude>=IgnoreBelowSpeed and NameMatches(FInfo.BlueprintName) then
-          A=A+FInfo.Velocity  -- Alignment
-          C=C+FInfo.CenterOfMass -- Cohesion
-          J=J+FInfo.CenterOfMass*(1-FInfo.HealthFraction) -- Injured cohesion
-          Aligning=Aligning+1
-          Injured=Injured+(1-FInfo.HealthFraction)
+  if NeighborRadius>0 then
+    local FCount = I:GetFriendlyCount()
+    for f = 0, FCount-1 do
+      local FInfo = I:GetFriendlyInfo(f)
+      if FInfo.Valid then
+        local Dist=FInfo.CenterOfMass-CoM
+        if Dist.magnitude<NeighborRadius then
+          if FInfo.Velocity.magnitude>=IgnoreBelowSpeed and NameMatches(FInfo.BlueprintName) then
+            A=A+FInfo.Velocity  -- Alignment
+            C=C+FInfo.CenterOfMass -- Cohesion
+            J=J+FInfo.CenterOfMass*(1-FInfo.HealthFraction) -- Injured cohesion
+            Aligning=Aligning+1
+            Injured=Injured+(1-FInfo.HealthFraction)
+          end
+          S=S+Dist -- Separation
+          Near=Near+1
+        elseif FInfo.Velocity.magnitude>=IgnoreBelowSpeed and NameMatches(FInfo.BlueprintName) then
+          L=L+FInfo.CenterOfMass -- Long-range cohesion
+          Far=Far+1
         end
-        S=S+Dist -- Separation
-        Near=Near+1
-      elseif FInfo.Velocity.magnitude>=IgnoreBelowSpeed and NameMatches(FInfo.BlueprintName) then
-        L=L+FInfo.CenterOfMass -- Long-range cohesion
-        Far=Far+1
       end
     end
+
+    if Aligning>0 then
+      A=(A/Aligning).normalized*AlignmentWeight
+      C=(C/Aligning-CoM).normalized*CohesionWeight
+    end
+    if Injured>0 then J=(J/Injured-CoM).normalized*InjuredWeight end
+    if Far>0 then L=(L/Far-CoM).normalized*LongRangeWeight end
+    if Near>0 then S=(-S/Near).normalized*SeparationWeight end
   end
 
   if TerrainAvoidanceWeight~=0 then
@@ -808,14 +850,6 @@ function Flocking(I, Azimuth, Escaping)
       end
     end
   end 
-
-  if Aligning>0 then
-    A=(A/Aligning).normalized*AlignmentWeight
-    C=(C/Aligning-CoM).normalized*CohesionWeight
-  end
-  if Injured>0 then J=(J/Injured-CoM).normalized*InjuredWeight end
-  if Far>0 then L=(L/Far-CoM).normalized*LongRangeWeight end
-  if Near>0 then S=(-S/Near).normalized*SeparationWeight end
 
   local T=Quaternion.Euler(0,Yaw-Azimuth,0)*Vector3.forward*TargetWeight*(Escaping and 0.1 or 1)
   if TargetPos.Valid and MaxDistance>0 then
@@ -895,6 +929,8 @@ function Initialize(I)
 
   Ticks=math.floor(math.random()*UpdateRate)
 
+  InitPIDs()
+
   if type(VTOLEngines) == "table" then
     for k, p in pairs(VTOLEngines) do ClassifyEngine(I,p,true) end
   end
@@ -945,7 +981,6 @@ function Movement(I)
   ClassifyEngines(I)
 
   DriveDesc = {'','','',''}
-  VTPower = {0,0,0,0} -- yaw, roll, pitch, VTOL
     
   TargetPos = I:GetTargetPositionInfo(0,0)
   if TargetPos.Valid then

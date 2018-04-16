@@ -117,6 +117,17 @@ Throttle we'll use when engaged with enemies.
     RollingThrottle = 1   -- when rolling aircraft to face enemy (angle to target is greater than "AngleBeforeRoll")
     ClosingThrottle = 1   -- when outside of ClosingDistance AND not in a roll
 
+## PID SETTINGS
+
+These settings work similarly to the PID control block available for the normal FtD AI. PID control allows for much more stable flight (if desired). Most people may not need to edit these settings at all. The "P" setting is kP gain, or how powerfully the AI responds to a request for a change in angle. The "D" setting is Td derivative time and helps the AI smooth out overcorrections. Most of the time, the other settings won't need to be changed at all.
+
+    --                   P,        D,       I,    OutMax,   OutMin,    IMax,    IMin
+    yawPIDData      = {0.2,     0.05,     0.0,         1,       -1,       1,      -1}
+    rollPIDData     = {0.2,     0.05,     0.0,         1,       -1,       1,      -1}
+    pitchPIDData    = {0.2,     0.02,     0.0,         1,       -1,       1,      -1}
+
+My thanks to Draba, goduranus, and CP75 for their previous work on PID controllers for FtD, which this code also uses.
+
 ## HELICOPTER OPTIONS
 
 A list of subconstruct ID's for the individual spinners you want to use for altitude control on a helicopter. Use 'all' if you want to use all spinners. These do NOT include Dediblades; use the next setting for that.
@@ -352,13 +363,6 @@ The VTOL angle is the downwards angle VTOL spinners will be set to in VTOL mode 
 
     MaxVTAngle = {30,30,30,90} -- yaw, roll, pitch, VTOL
 
-These next two settings may not need to be changed. They control the interaction between
-a decision to move a particular direction and how powerfully the spinner angles respond to that impulse.
-These are roughly similar to the parameters of a PID-controller.
-
-    VTProportional = {1,1,1} 
-    VTDelta = {.1,.1,0}
-
 The maximum speed at which vector thrust spinners change direction. Ranges between 1 and 30. You will want this at 30 for best vehicle performance but may want to set it lower for the sake of smoother visual changes.
 
     VTSpeed = 30
@@ -416,13 +420,6 @@ See more information in [How to improve FPS](https://github.com/Madwand99/From-t
 This AI automatically clamps "MaxPitch" and "MinPitch" according to how near the aircraft is to it's target altitude to prevent overshooting when changing altitude. Higher values of "AltitudeClamp" decrease this effect, allowing steeper changes in altitude. Lower values help prevent overshooting. AltitudeClamp also controls how gradually airships approach their target altitude when using altitude jets or helicopter blades.
 
     AltitudeClamp = .2
-
-Damping parameters to mitigate wobbling in high-performance vehicles. Higher values can help
-control wobbling, lower values allow more responsive controls but may overshoot and cause wobble more often.
-
-    PitchDamping = 90
-    YawDamping = 90
-    RollDamping = 45
 
 The default roll angle to maintain. Set it to 90 to have the vehicle usually on it's side.
 You may want to set "AngleBeforeTurn" to 180 if you do this, so you never yaw.
@@ -502,4 +499,5 @@ Whether to orbit the spawn point when there are no enemies, or just fly off in a
 
 * [Cutlass demo on Steam workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=1354628015) This is a demo of the AI, showing off concepts like missile evasion and vector thrust.
 * [From the Depths on Steam](http://store.steampowered.com/app/268650/From_the_Depths/)
-* [Forum thread for this AI where you can go for help.](http://www.fromthedepthsgame.com/forum/showthread.php?tid=9108) Note: if your issue is "my plane doesn't fly", make sure it DOES fly with the normal aerial AI -- this AI can't overcome bad design, though it can help in some cases. Exception: vector thrust. Normal AI can't do that (without a lot of ACBs anyway). This code is not magic and can't make a plane fly that couldn't otherwise. 
+* [Forum thread for this AI where you can go for help.](http://www.fromthedepthsgame.com/forum/showthread.php?tid=9108) Note: if your issue is "my plane doesn't fly", make sure it DOES fly with the normal aerial AI -- this AI can't overcome bad design, though it can help in some cases. Exception: vector thrust. Normal AI can't do that (without a lot of ACBs anyway). This code is not magic and can't make a plane fly that couldn't otherwise.
+* [Draba's hover AI](http://www.fromthedepthsgame.com/forum/showthread.php?tid=15393) My code borrows PID control code from this AI. For some types of vehicles -- particularly some hovercraft -- Draba's AI is very helpful.
