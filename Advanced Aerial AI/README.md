@@ -496,6 +496,8 @@ The maximum speed at which vector thrust spinners change direction. Ranges betwe
 VTSpeed = 30
 ```
 
+You may experience "flapping", or rapid changes in vector thrust angle on some settings. To mitigate this, lower the Derivative value in the PID settings corresponding to the particular type of control you want to adjust - sometimes very small values are necessary. You can also try reducing `MaxVTAngle` and/or `VTSpeed`, but these all change different behaviors.
+
 ## VTOL/HOVER OPTIONS
 
 While not yet as extensive as the hover options afforded by some other scripts, this AI does allow for control of hover jets to control altitude, as well as VTOL takeoff at low speeds (i.e. decks of carriers and the like).
