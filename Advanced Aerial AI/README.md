@@ -1,4 +1,4 @@
-Introducing my version of an advanced aerial AI. This Lua script is intended as a drop-in replacement for the standard aerial AI, with many more parameters to set and far more robust altitude matching and terrain handling, as well as methods for mitigating the "wobbling" you can get in high-performance vehicles.
+Introducing my version of an advanced aerial AI. This Lua script is intended as a drop-in replacement for the standard aerial AI, with many more parameters to set and far more robust altitude matching and terrain handling, as well as PID controllers for more stable flight.
 
 This AI also includes built-in water start AI, collision avoidance AI, "dogfighting" options, vector thrust options, missile avoidance, predictive interception, VTOL takeoff, flocking, and several other features. It can also be used to control naval vessels, helicopters, and many kinds of hovercraft and airships.
 
@@ -18,14 +18,16 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 </details>
 
 <details>
-<summary>How to use this AI for naval and land vehicles?</summary>
+<summary>How to use this AI for ships, submarines, and land vehicles?</summary>
 
 * Set `AngleBeforeRoll = 180`, so your ship yaws to turn all the time.
-* Set `CruiseAltitude` to the typical altitude of your vehicle. This isn't strictly necessary to do but it helps the AI not be confused.
+* Set `CruiseAltitude` to the typical altitude of your vehicle. This will be particularly helpful for submarines.
 * Set `DeployAlt` to some large negative value so it won't try to do a water start and thus turn off the engines.
 * Set `DriveMode` to `0` or `1` for water/land mode controls respectively.
 * You will probably want to make your vehicle an orbiter (see above) so it won't try to strafe the enemy and collide with them.
-* Set other parameters as desired to control the behavior of the ship. Good luck!
+* If you use large rudders, the vector thrust/large rudder options can optionally control them
+* If you use hydrofoils, set HydrofoilMode to 1 or 2 as appropriate
+* Set other parameters as desired to control the behavior of the vehicle. Good luck!
 </details>
 
 <details>
@@ -165,7 +167,7 @@ ClosingThrottle = 1   -- when outside of ClosingDistance AND not in a roll
 
 ## PID SETTINGS
 
-These settings work similarly to the PID control block available for the normal FtD AI. PID control allows for much more stable flight (if desired). Most people may not need to edit these settings at all. The "P" setting is kP gain, or how powerfully the AI responds to a request for a change in angle. The "D" setting is Td derivative time and helps the AI smooth out overcorrections. Most of the time, the other settings won't need to be changed at all.
+These settings work similarly to the PID control block available for the normal FtD AI. PID control allows for much more stable flight (if desired). Most people may not need to edit these settings at all. The "P" setting is kP gain, or how powerfully the AI responds to a request for a change in angle. The "D" setting is Td derivative time and helps the AI smooth out overcorrections. Most of the time, the other settings won't need to be changed at all. Note that vector thrust is not controlled by PID, but a separate control mechanism.
 
 ```lua
 --                   P,        D,       I,    OutMax,   OutMin,    IMax,    IMin
@@ -414,10 +416,11 @@ Altitude will still be constrained by `MinAltitude` and `MaxAltitude` terrain av
 MatchAltitudeOffset = 0
 ```
 
-The minimum altitude the aircraft will go to when matching altitude
+The minimum and maximum altitudes the aircraft will go to when matching altitude
 
 ```lua
 MinMatchingAltitude = 100
+MaxMatchingAltitude = 800
 ```
 
 Use vehicle roll to try to "broadside" a target. This is very different to a naval broadside (which uses yaw). This is intended for vehicles which have weapons that don't have good elevation control. Set `BroadsideWithin` to a positive number to start broadsiding when the target is within a certain range -- usually would set to the effective range of your weapons. `BroadsideAngle` then controls the roll angle relative to the target you want your vehicle to take. `0` means you want either side of your vehicle pointed at the enemy. `90` means the bottom of your vehicle, `-90` the top. Roll angles will respect the `MaxRollAngle` setting, in the advanced options. The AI will not attempt to broadside while performing a roll to turn, so this option may work best for vehicles that only yaw to turn.
@@ -429,7 +432,7 @@ BroadsideAngle = 0
 
 ## MISSILE AVOIDANCE OPTIONS
 
-If you allow it to, this AI will try to avoid enemy missiles by running away from them using the advanced steering system. This is generally only useful on maneuverable vehicles (so that it can turn to run away in time), and fast vehicles (so it can buy itself time or just completely outrun missiles).
+If you allow it to, this AI will try to avoid enemy missiles by running away or dodging them using the advanced steering system. The effectiveness of these strategies depends on many factors like speed, maneuverability, and use of decoys and flares.
 
 Set `WarningMainframe = -1` to ignore missiles. Set it to the index
 of the mainframe with missile warners, if you have missile warners. If you only have one mainframe,
@@ -438,11 +441,11 @@ then `WarningMainframe = 0`.
 ```lua
 WarningMainframe = -1
 ```
-
-If missiles are within this time-to-target threshold, vehicle will try to run away from them.
+Missile evasion is a two-stage maneuver. First, the vehicle will try to run away if it detects missiles within the given time-to-target threshold. If this fails and the missiles reach the `DodgeTTT` threshold, the vehicle will attempt to make a sharp turn to the left or right to shake off the missiles. This "dodge" maneuver will last until the AI detects there are no more dangerous missiles on it's tail. You can turn off dodging by setting `DodgeTTT = 0`.
 
 ```lua
 RunAwayTTT = 4  -- in seconds
+DodgeTTT = 2
 ```
 
 You shouldn't need to mess with this. Helps decide when a missile might be dangerous.
@@ -457,13 +460,14 @@ The speed (in m/s) your ship is usually able to go when dodging missiles.
 NormalSpeed = 100
 ```
 
-The weight (or priority) to give dodging missiles for the advanced steering system. This is on a *per missile* basis, so a large missile barrage is considered very high-priority in total. Also, the closer to impact a missile is, the more importance it is given. `0` will ignore missiles, larger values will give running away increasingly high priority (`2` works fine in my tests, though you may want it higher if even one missile is dangerous to your vehicle).
+The weights (or priorities) to give avoiding missiles for the advanced steering system. `RunAwayWeight` is on a *per missile* basis, so a large missile barrage is considered very high-priority in total. Also, the closer to impact a missile is, the more importance it is given. `0` will ignore missiles, larger values will give running away increasingly high priority (`2` works fine in my tests, though you may want it higher if even one missile is dangerous to your vehicle). `DodgingWeight` works differently: if there is even one missile within the `DodgeTTT` threshold, the dodge maneuver will be activated with this priority. Thus, this priority should be set high but probably not as high as `AvoidanceWeight`.
 
 ```lua
-DodgingWeight = 2
+RunAwayWeight = 2
+DodgingWeight = 5
 ```
 
-## VECTOR THRUST OPTIONS
+## VECTOR THRUST/LARGE RUDDER OPTIONS
 
 Vector thrust means placing jets on spin blocks, potentially allowing much more powerful yaw, pitch,
 or roll authority on a vehicle. See below a demo Cutlass using vector thrust for roll:
@@ -471,6 +475,15 @@ or roll authority on a vehicle. See below a demo Cutlass using vector thrust for
 <p align="center">
 <img src="http://i.imgur.com/5ieUbRY.jpg" alt="Vector thrust" width="600"/>
 </p>
+
+Vector thrust code may also be used to control large rudders, as we see below. These rudders permit control of yaw, pitch, and roll:
+
+<p align="center">
+<img src="http://i.imgur.com/Ha84b4r.jpg" alt="Large Rudders" width="600"/>
+</p>
+
+It is reccommended that you use conventional control methods (ailerons, tailplanes, thrusters) in addition to vector
+thrust for the most stable (PID-controlled) flight, as vector thrust does not use PID controls.
 
 Turn this option on by specifying a number of SubConstruct IDs
 to use with `VTSpinners`. Use `VTSpinners = 'all'` to use all spinners, or supply a comma-delimited
@@ -482,12 +495,25 @@ Also see the `ExcludeSpinners` option to specify a list of spinners to exclude, 
 VTSpinners = nil
 ```
 
-The maximum angle to set any particular spinner to. Roll and pitch angles are cumulative (so make sure they sum to at most 90 degrees). The maximum angle you can specify is 90 degrees. Set to `0` to not use that particular kind of vector
+The maximum angle to set any particular spinner to. Roll and pitch angles are cumulative (so make sure they sum to at most 90 degrees).
+The maximum angle you can specify is 90 degrees. Set to `0` to not use that particular kind of vector
 thrust. You can use negative angles to reverse the angle direction.
 The VTOL angle is the downwards angle VTOL spinners will be set to in VTOL mode (see next section).
 
 ```lua
 MaxVTAngle = {30,30,30,90} -- yaw, roll, pitch, VTOL
+```
+
+As PID controls do not affect vector thrust, a separate control system governs these.
+The `VTResponseAngle` parameters govern the sensitivity of vector thrust and rudders to desired changes
+in yaw, roll, and pitch (respectively). `VTResponseAngleMin` is the minimum deflection (in degrees) from the desired
+control angle at which the spinners begin to react. At `VTResponseAngleMax` deflection from the desired
+control angle, vector thrust control will be pegged at the maximum angle given by `MaxVTAngle`. In between
+these ranges, vector thrust responds linearly to differences in desired control angle.
+
+```lua
+VTResponseAngleMax = {20,20,20}
+VTResponseAngleMin = {5,5,5}
 ```
 
 The maximum speed at which vector thrust spinners change direction. Ranges between `1` and `30`. You will want this at `30` for best vehicle performance but may want to set it lower for the sake of smoother visual changes.
@@ -548,6 +574,18 @@ Set to `0` for water mode, `1` for land mode, `2` for air mode.
 
 ```lua
 DriveMode = 2
+```
+
+This AI will optionally use PID-controlled hydrofoils for yaw, roll and pitch (depending on placement of hydrofoils).
+With `HydrofoilMode = 0`, hydrofoil control is in "default" mode, not directly controlling hydrofoils, though they may
+be controlled indirectly by the FtD propulsion AI. With `HydrofoilMode = 1`, pitch/yaw control is separated from roll control.
+Hydrofoils near the center of mass (along the length of the vehicle) will be used only for roll. Hydrofoils near the front
+or back of the vehicle are used for pitch/yaw according to orientation (although front, back, up, or down placement does not matter).
+With `HydrofoilMode = 2`, all hydrofoils will be used for roll control, while again only hydrofoils near the front or back of the
+vehicle will be used for pitch/yaw. Sharing roll control with pitch/yaw has advantages and disadvantages, so the choice is up to you.
+
+```lua
+HydrofoilMode = 0
 ```
 
 How often to recalculate heading and altitude. At `1` (the minimum), these will recalculate every update. At `10`,

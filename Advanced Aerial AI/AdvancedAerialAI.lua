@@ -1,6 +1,6 @@
 --[[
-Advanced aerial AI, version 5.2
-Created by Madwand 4/15/2018
+Advanced aerial AI, version 5.3
+Created by Madwand 11/17/2018
 Use and modify this code however you like, however please credit me
 if you use this AI or a derivative of it in a tournament, or you publish a blueprint
 using it. Also let me know if you make any significant improvements,
@@ -84,19 +84,24 @@ MatchTargetAltitude = false
 MatchAltitudeRange = 1000
 MatchAltitudeOffset = 100
 MinMatchingAltitude = 50
+MaxMatchingAltitude = 800
 BroadsideWithin=0
 BroadsideAngle=0
 
 -- MISSILE AVOIDANCE OPTIONS
-WarningMainframe = 0
+WarningMainframe = -1
 RunAwayTTT = 4
+DodgeTTT = 2
 DangerRadius = 20
 NormalSpeed = 75
-DodgingWeight = 2
+RunAwayWeight = 2
+DodgingWeight = 5
 
--- VECTOR THRUST OPTIONS
+-- VECTOR THRUST/LARGE RUDDER OPTIONS
 VTSpinners = nil
 MaxVTAngle = {40,40,40,90} -- yaw, roll, pitch, VTOL
+VTResponseAngleMax = {20,20,20}
+VTResponseAngleMin = {5,5,5}
 VTSpeed = 30
 
 --VTOL/HOVER OPTIONS
@@ -107,6 +112,7 @@ VTOLSpinners = 'all'
 
 -- ADVANCED OPTIONS
 DriveMode = 2
+HydrofoilMode = 0
 UpdateRate = 1
 AltitudeClamp = .2
 MainDriveControlType = 0
@@ -141,9 +147,10 @@ AllSpinners = {}
 ExcludedSpinners = {}
 RollEngines = {}
 PitchEngines = {}
+Hydrofoils=0
+ImpulseType = {}
 EngineDF = {}
 SpinnerStartRotations={}
-DYaw = 0
 NumEngines = 0
 DesiredAltitude = 0
 DesiredAzimuth = 0
@@ -152,6 +159,7 @@ Rolling = false
 Throttle=CruiseThrottle
 Ticks = 0
 VTPower = {0,0,0,0} -- yaw, roll, pitch, VTOL
+DodgeDir=0
 
 function InitPID(pidData)
     PID = {}
@@ -198,25 +206,26 @@ end
 function AdjustPitchTo(I,DesiredPitch)
   pitchInput,pitchPID = GetPIDOutput(DesiredPitch, Pitch, pitchPID)
 
+  PitchDiff = Pitch - DesiredPitch
   if (Pitch > DesiredPitch) then
     if (math.abs(Roll)>135) then
-      Control(I, PITCHDRIVE, pitchInput)
+      Control(I, PITCHDRIVE, pitchInput, PitchDiff)
     elseif (Roll<-45) then
-      Control(I, YAWDRIVE, pitchInput)
+      Control(I, YAWDRIVE, pitchInput, -PitchDiff)
     elseif (Roll>45) then
-      Control(I, YAWDRIVE, -pitchInput)
+      Control(I, YAWDRIVE, -pitchInput, -PitchDiff)
     elseif (math.abs(Roll)<45 and state~="rolling") then
-      Control(I, PITCHDRIVE, pitchInput)
+      Control(I, PITCHDRIVE, pitchInput, PitchDiff)
     end
   elseif (Pitch < DesiredPitch) then
     if (math.abs(Roll)>135 and state~="rolling") then
-      Control(I, PITCHDRIVE, pitchInput)
+      Control(I, PITCHDRIVE, pitchInput, PitchDiff)
     elseif (Roll<-45) then
-      Control(I, YAWDRIVE, pitchInput)
+      Control(I, YAWDRIVE, pitchInput, -PitchDiff)
     elseif (Roll>45) then
-      Control(I, YAWDRIVE, -pitchInput)
+      Control(I, YAWDRIVE, -pitchInput, -PitchDiff)
     elseif (math.abs(Roll)<45) then
-      Control(I, PITCHDRIVE, pitchInput)
+      Control(I, PITCHDRIVE, pitchInput, PitchDiff)
     end
   end
 end
@@ -225,7 +234,7 @@ function GetDesiredAltitude(I, Engaged, Pos)
   local NewAltitude = CruiseAltitude
 
   if Engaged and MatchTargetAltitude and Pos.GroundDistance < MatchAltitudeRange then
-    NewAltitude = math.max(math.min(Pos.AltitudeAboveSeaLevel+MatchAltitudeOffset,MaxAltitude),MinMatchingAltitude)
+    NewAltitude = math.max(math.min(Pos.AltitudeAboveSeaLevel+MatchAltitudeOffset,MaxAltitude,MaxMatchingAltitude),MinMatchingAltitude)
   end
 
   if AvoidTerrain then
@@ -248,7 +257,7 @@ function AdjustAltitude(I, NewAltitude, OverTerrain)
     local Angle = math.max(MinPitch,math.min(MaxPitch,(NewAltitude-Alt)*AltitudeClamp))
 -- pull up/down with full strength if we are below/above min/max altitudes
     if Alt>MaxAltitude and Pitch>0 then Angle = MinPitch end
-    if (Alt<MinAltitude and Pitch<0) or OverTerrain then Angle = MaxPitch end
+    if OverTerrain then Angle = MaxPitch end
     AdjustPitchTo(I, Angle)
   end
 
@@ -303,12 +312,7 @@ function GetAngleStats(I)
     PitchCorrection = math.max(MinPitch,math.min(MaxPitch,PitchCorrection + .01*(Pitch-VPitch-PitchCorrection)))
     Pitch = Pitch - PitchCorrection
   end
-  
-  local AngularVelocity = I:GetLocalAngularVelocity()
-  DPitch = -AngularVelocity.x
-  DYaw = DYaw+.1*(AngularVelocity.y-DYaw)
-  DRoll = AngularVelocity.z
-  
+
   CoM = I:GetConstructCenterOfMass()
   Alt = CoM.y
   ForwardV = I:GetConstructForwardVector()
@@ -358,16 +362,16 @@ function RollTowardsAzimuth(I,Azimuth,NewAltitude)
   RollAngle = sign(Azimuth)*math.min(MaxRollAngle, 90+limiter((Alt-NewAltitude)*.66, 30))
   
   AdjustRollToAngle(I,RollAngle)
-  
+
   if (sign(Roll)==sign(Azimuth) and Roll >= RollAngle-RollTolerance and Roll <= RollAngle+RollTolerance) then -- start pitching
-    Control(I, PITCHDRIVE, 1)
+    Control(I, PITCHDRIVE, 1, Azimuth)
   end
 end
 
 -- Roll the vehicle to a specified roll angle
 function AdjustRollToAngle(I,Angle)
   rollInput,rollPID = GetPIDOutput(Angle, Roll, rollPID)
-  Control(I, ROLLDRIVE, rollInput)
+  Control(I, ROLLDRIVE, rollInput, Roll-Angle)
 end
 
 -- transform an absolute azimuth into one relative to the nose of the vehicle
@@ -381,7 +385,7 @@ end
 function YawTowardsAzimuth(I,Azimuth)
   if (math.abs(Roll)<30) then
     yawInput,yawPID = GetPIDOutput(0, Azimuth, yawPID)
-    Control(I, YAWDRIVE, -yawInput)
+    Control(I, YAWDRIVE, -yawInput, -Azimuth)
     return true
   end
   return false
@@ -456,11 +460,15 @@ function limiter(p,l)
   return math.min(l,math.max(-l,p))
 end
 
-function Control(I, DoFType, Impulse)
+function Control(I, DoFType, Impulse, Angle)
   local Type = DoFType*2 - (Impulse<0 and 1 or 2)
   I:RequestControl(DriveMode, Type, math.abs(Impulse))
   DriveDesc[DoFType] = DriveTypeDesc[Type+1]
-  VTPower[DoFType] = -Impulse
+  ImpulseType[DoFType] = Impulse
+  if math.abs(Angle)>VTResponseAngleMin[DoFType] then
+    local Max=VTResponseAngleMax[DoFType]-VTResponseAngleMin[DoFType]
+    VTPower[DoFType] = limiter(Angle-sign(Angle)*VTResponseAngleMin[DoFType],Max)/Max
+  else VTPower[DoFType]=0 end
 end
 
 function ComputeSpinners(Rotation, Spinners, Axis)
@@ -496,6 +504,7 @@ function VectorEngines(I)
   end 
 
   RotateSpinnersTo(I,Rotation)
+  AdjustHydrofoils(I,ImpulseType[1]*45,-ImpulseType[2]*45,ImpulseType[3]*45)
   
   --I:LogToHud(string.format("Y: %.02f R: %.02f P: %.02f", VTPower[1], VTPower[2], VTPower[3]))
 end
@@ -505,7 +514,7 @@ function ClassifySpinner(I,p)
   local info = I:GetSubConstructInfo(p)
   local h,a,b = EulerAngles(info.LocalRotation)
   local pos = info.LocalPositionRelativeToCom
-  SpinnerStartRotations[p]=info.LocalRotation
+  SpinnerStartRotations[p]=I:GetSubConstructIdleRotation(p)
   a=math.floor(a+.5)
   b=math.floor(b+.5)
   if (a==0 and b==0) then
@@ -577,7 +586,60 @@ end
 function tinsert(z,s,x,y,p)
   s[p] = z>0 and x or y
 end
-      
+
+function ClassifyHydrofoil(I,p)
+  local info = I:Component_GetBlockInfo(8,p)
+  local pos = info.LocalPositionRelativeToCom
+  local h,a,b = EulerAngles(info.LocalRotation)
+  h=math.floor(h+.5)
+  a=math.floor(a+.5)
+
+  if h/180~=math.floor(h/180) then
+    return -- not properly placed
+  elseif a==0 then
+    PitchHydros[p],RollHydros[p]=HydroTurnRoll(h==0,pos.z,pos.x)
+  else
+    YawHydros[p],  RollHydros[p]=HydroTurnRoll(a>=0,pos.z,pos.y)
+  end
+end
+
+function HydroTurnRoll(test,pos1,pos2)
+  local forwards=test and 1 or -1
+  local HTurn,HRoll = nil,nil
+  if pos1>Length/6 then
+    HTurn=forwards
+  elseif pos1<-Length/6 then
+    HTurn=-forwards
+  end
+
+  if HydrofoilMode==2 or not HTurn then
+    if pos2<0 then
+      HRoll=forwards
+    elseif pos2>0 then
+      HRoll=-forwards
+    end
+  end
+  return HTurn,HRoll
+end
+
+function ClassifyHydrofoils(I)
+  if HydrofoilMode>0 and Hydrofoils~=I:Component_GetCount(8) then
+    Hydrofoils=I:Component_GetCount(8)
+    YawHydros,RollHydros,PitchHydros={},{},{}
+    for p = 0, Hydrofoils - 1 do ClassifyHydrofoil(I,p) end
+  end
+end
+
+function AdjustHydrofoils(I, ToYaw, ToRoll, ToPitch)
+  if HydrofoilMode==0 then return end
+  local Hydros={}
+  for p = 0, Hydrofoils - 1 do Hydros[p]=0 end
+  for p, k in pairs(YawHydros) do Hydros[p]=ToYaw*k end
+  for p, k in pairs(PitchHydros) do Hydros[p]=ToPitch*k end
+  for p, k in pairs(RollHydros) do Hydros[p]=Hydros[p]+ToRoll*k end
+  for p, k in pairs(Hydros) do I:Component_SetFloatLogic(8,p,k) end
+end
+
 function EulerAngles(q1)
   local sqw = q1.w*q1.w
   local sqx = q1.x*q1.x
@@ -652,7 +714,7 @@ function GetMissileWarnings(I)
       local AdjustedPosition = PredictedPosition + Vector3.ClampMagnitude(Orthogonal, CraftRadius)
       local Radius = (Vector3.Distance(Warning.Position, AdjustedPosition) / 2)
                      / math.cos(math.rad(I:Maths_AngleBetweenVectors(Warning.Velocity, AdjustedPosition - Warning.Position) - 90))
-      if TTT < RunAwayTTT and Radius > DangerRadius then
+      if TTT < math.max(RunAwayTTT,DodgeTTT) and Radius > DangerRadius then
         table.insert(TTTs, TTT)
         table.insert(Warnings, Warning)
       end
@@ -736,16 +798,16 @@ function SteerToAvoidCollisions(I)
     end
   end
 
-  return Dodge(I, minTime, ThreatVel, ThreatCoM)
+  return I:GetConstructRightVector()*Dodge(I, minTime, CollisionTThreshold, ThreatVel, ThreatCoM)
 end
 
 -- Given a time-to-target, threat velocity,
 -- and threat CoM, returns a dodge vector
-function Dodge(I, TTT, TVel, TCoM)
+function Dodge(I, TTT, TThreshold, TVel, TCoM)
   local side = I:GetConstructRightVector()
   local steer = 0
 
-  if TTT<CollisionTThreshold then
+  if TTT<TThreshold then
     local parallelness = Vector3.Dot(ForwardV, TVel.normalized)
     
     if parallelness<-0.707 then  -- head-on collision
@@ -765,7 +827,7 @@ function Dodge(I, TTT, TVel, TCoM)
     end    
   end
 
-  return side*steer
+  return steer
 end
 
 function GetApproach(OwnVelocity, TVelocity, TPos)
@@ -840,15 +902,18 @@ function Flocking(I, Azimuth, Escaping)
     if Terrain>0 then E=(-E/Terrain).normalized*TerrainAvoidanceWeight end
   end
 
-  if I:GetNumberOfMainframes() > 0 then
-    if DodgingWeight~=0 then 
-      local TTTs, Warnings = GetMissileWarnings(I)
-      local minTTT=RunAwayTTT
-      for w,t in ipairs(TTTs) do
-        D=D+(CoM-Warnings[w].Position).normalized*(1-t/RunAwayTTT)*DodgingWeight
-        minTTT=math.min(minTTT,t)
-      end
+  if I:GetNumberOfMainframes() > 0 and RunAwayWeight+DodgingWeight~=0 then 
+    local TTTs, Warnings = GetMissileWarnings(I)
+    local DodgingTTT=RunAwayTTT
+    local DodgeCount=0
+    for w,t in ipairs(TTTs) do
+      if t<DodgeTTT then DodgeCount=DodgeCount+1 end
+      if not Dodging then DodgeDir=DodgeDir+Dodge(I, t, DodgeTTT, Warnings[w].Velocity, Warnings[w].Position)*(1-t/RunAwayTTT) end
+      D=D+(CoM-Warnings[w].Position).normalized*(1-t/RunAwayTTT)*RunAwayWeight
     end
+    Dodging = DodgeCount~=0
+    if Dodging then D=(I:GetConstructRightVector()*DodgeDir).normalized*DodgingWeight
+    else DodgeDir=0 end
   end 
 
   local T=Quaternion.Euler(0,Yaw-Azimuth,0)*Vector3.forward*TargetWeight*(Escaping and 0.1 or 1)
@@ -926,6 +991,8 @@ function Initialize(I)
   MaxAltitude = MaxAltitude+AltitudeOffset
   MatchAltitudeOffset = MatchAltitudeOffset+AltitudeOffset
   MinMatchingAltitude = MinMatchingAltitude+AltitudeOffset
+  MaxMatchingAltitude = MaxMatchingAltitude+AltitudeOffset
+  Length = (I:GetConstructMaxDimensions() - I:GetConstructMinDimensions()).z
 
   Ticks=math.floor(math.random()*UpdateRate)
 
@@ -972,6 +1039,11 @@ function Initialize(I)
   if type(VTOLSpinners) == "table" then
     for k, p in pairs(VTOLSpinners) do ClassifyVTOLSpinner(I,p) end
   end
+  PrintList(I,"RollSpinners",RollSpinners)
+  PrintList(I,"PitchSpinners",PitchSpinners)
+  PrintList(I,"YawSpinners",YawSpinners)
+  PrintList(I,"DownSpinners",DownSpinners)
+
   I:Log("AI successfully initialized.")
 end
 
@@ -979,6 +1051,7 @@ end
 function Movement(I)
   Initialize(I)
   ClassifyEngines(I)
+  ClassifyHydrofoils(I)
 
   DriveDesc = {'','','',''}
     
