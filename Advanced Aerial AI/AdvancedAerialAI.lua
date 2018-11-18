@@ -1,6 +1,6 @@
 --[[
-Advanced aerial AI, version 5.3
-Created by Madwand 11/17/2018
+Advanced aerial AI, version 5.31
+Created by Madwand 11/18/2018
 Use and modify this code however you like, however please credit me
 if you use this AI or a derivative of it in a tournament, or you publish a blueprint
 using it. Also let me know if you make any significant improvements,
@@ -466,7 +466,7 @@ function Control(I, DoFType, Impulse, Angle)
   DriveDesc[DoFType] = DriveTypeDesc[Type+1]
   ImpulseType[DoFType] = Impulse
   if math.abs(Angle)>VTResponseAngleMin[DoFType] then
-    local Max=VTResponseAngleMax[DoFType]-VTResponseAngleMin[DoFType]
+    local Max=VTResponseAngleMax[DoFType]-VTResponseAngleMin[DoFType]+.01
     VTPower[DoFType] = limiter(Angle-sign(Angle)*VTResponseAngleMin[DoFType],Max)/Max
   else VTPower[DoFType]=0 end
 end
@@ -694,8 +694,6 @@ function FindConvergence(I, tPos, tVel, wPos, wSpeed, minConv)
 end
 
 function GetMissileWarnings(I)
-  if WarningMainframe<0 then return 0 end
-  
   local NumWarnings = I:GetNumberOfWarnings(WarningMainframe)
   local OwnVelocity = ForwardV * math.max(NormalSpeed, Speed)
   local TTTs={}
@@ -902,7 +900,7 @@ function Flocking(I, Azimuth, Escaping)
     if Terrain>0 then E=(-E/Terrain).normalized*TerrainAvoidanceWeight end
   end
 
-  if I:GetNumberOfMainframes() > 0 and RunAwayWeight+DodgingWeight~=0 then 
+  if WarningMainframe>=0 and I:GetNumberOfMainframes() > 0 and RunAwayWeight+DodgingWeight~=0 then 
     local TTTs, Warnings = GetMissileWarnings(I)
     local DodgingTTT=RunAwayTTT
     local DodgeCount=0
