@@ -1,6 +1,6 @@
 --[[
-Advanced aerial AI, version 5.31
-Created by Madwand 11/18/2018
+Advanced aerial AI, version 5.32
+Created by Madwand 2/4/2019
 Use and modify this code however you like, however please credit me
 if you use this AI or a derivative of it in a tournament, or you publish a blueprint
 using it. Also let me know if you make any significant improvements,
@@ -504,7 +504,6 @@ function VectorEngines(I)
   end 
 
   RotateSpinnersTo(I,Rotation)
-  AdjustHydrofoils(I,ImpulseType[1]*45,-ImpulseType[2]*45,ImpulseType[3]*45)
   
   --I:LogToHud(string.format("Y: %.02f R: %.02f P: %.02f", VTPower[1], VTPower[2], VTPower[3]))
 end
@@ -630,9 +629,11 @@ function ClassifyHydrofoils(I)
   end
 end
 
-function AdjustHydrofoils(I, ToYaw, ToRoll, ToPitch)
-  if HydrofoilMode==0 then return end
+function AdjustHydrofoils(I)
   local Hydros={}
+  local ToYaw=ImpulseType[1]*45
+  local ToRoll=-ImpulseType[2]*45
+  local ToPitch=ImpulseType[3]*45
   for p = 0, Hydrofoils - 1 do Hydros[p]=0 end
   for p, k in pairs(YawHydros) do Hydros[p]=ToYaw*k end
   for p, k in pairs(PitchHydros) do Hydros[p]=ToPitch*k end
@@ -1062,6 +1063,7 @@ function Movement(I)
   
   if VTSpinners then VectorEngines(I) end
   if VTOLEngines then ControlVTOLPower(I) end
+  if HydrofoilMode>0 then AdjustHydrofoils(I) end
   
   if DebugMode then
     --I:LogToHud(string.format("%.2f %.2f", DPitch, math.abs(Roll)))
