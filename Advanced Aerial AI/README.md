@@ -34,7 +34,7 @@ An "orbiter" is a vehicle that continually circles their target instead of makin
 <summary>How to use this AI for hovercraft, helicopters, or airships?</summary>
 
 * Set `AngleBeforeRoll = 180`, so your ship yaws to turn all the time.
-* Set `MaxElevationAngle = 0` so that your ship won't pitch up or down.
+* Set `MaxPitch = 0` and `MinPitch = 0` so that your ship won't pitch up or down.
 * To use thrusters to control altitude, set `UseAltitudeJets = true`.
 * To use helicopter blades to control altitude, choose some spinners to set in `HeliSpinners` and/or some dediblades to set in `HeliDediblades`, or set either of these options to `'all'`, and set min and max helicopter blade speeds to an appropriate value for your helicopter.
 </details>
