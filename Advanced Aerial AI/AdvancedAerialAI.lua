@@ -1,6 +1,6 @@
 --[[
-Advanced aerial AI, version 5.32
-Created by Madwand 2/4/2019
+Advanced aerial AI, version 5.4
+Created by Madwand 7/3/2020
 Use and modify this code however you like, however please credit me
 if you use this AI or a derivative of it in a tournament, or you publish a blueprint
 using it. Also let me know if you make any significant improvements,
@@ -142,7 +142,7 @@ PitchCorrection = 0
 RollSpinners = {}
 PitchSpinners = {}
 YawSpinners = {}
-DownSpinners = {}
+HoverSpinners = {}
 AllSpinners = {}
 ExcludedSpinners = {}
 RollEngines = {}
@@ -498,9 +498,9 @@ function VectorEngines(I)
   ComputeSpinners(Rotation, RollSpinners, 2)
   ComputeSpinners(Rotation, PitchSpinners, 3)
   if (VTOLEngines and VTPower[4]~=0) then -- VTOL Mode
-    for Spinner,Dir in pairs(DownSpinners) do Rotation[Spinner] = Dir*MaxVTAngle[4] end
+    for Spinner,Dir in pairs(HoverSpinners) do Rotation[Spinner] = Dir*MaxVTAngle[4] end
   else
-    ComputeSpinners(Rotation, DownSpinners, 4)
+    ComputeSpinners(Rotation, HoverSpinners, 4)
   end 
 
   RotateSpinnersTo(I,Rotation)
@@ -528,11 +528,11 @@ function ClassifySpinner(I,p)
     a=math.floor(a+.5)
     if (h==0 and a==0) then -- pointed right
       tinsert(pos.z,PitchSpinners,1,-1,p)
-      if VTOLSpinners=='all' and ExcludedSpinners[p] then tinsert(pos.z,DownSpinners,-1,-1,p) end
+      if VTOLSpinners=='all' and ExcludedSpinners[p] then tinsert(pos.z,HoverSpinners,-1,-1,p) end
       AddSpinner(pos.x,-1,p)
     elseif (a==0 and math.abs(h)>170) then -- pointed left
       tinsert(pos.z,PitchSpinners,-1,1,p)
-      if VTOLSpinners=='all' and ExcludedSpinners[p] then tinsert(pos.z,DownSpinners,1,1,p) end
+      if VTOLSpinners=='all' and ExcludedSpinners[p] then tinsert(pos.z,HoverSpinners,1,1,p) end
       AddSpinner(pos.x,1,p)
     end
   end
@@ -546,9 +546,9 @@ function ClassifyVTOLSpinner(I,p)
   a=math.floor(a+.5)
   --I:Log(string.format("Spinner: %d Orientation: (%.2f, %.2f, %.2f) Position: (%.2f, %.2f, %.2f)", p, h, a, b, pos.x, pos.y, pos.z))
   if (h==0 and a==0) then
-    tinsert(pos.z,DownSpinners,-1,-1,p)
+    tinsert(pos.z,HoverSpinners,-1,-1,p)
   elseif (a==0 and math.abs(h)>170) then
-    tinsert(pos.z,DownSpinners,1,1,p)
+    tinsert(pos.z,HoverSpinners,1,1,p)
   end
 end
 
@@ -1024,7 +1024,9 @@ function Initialize(I)
   end
 
   if VTSpinners=='all' then
-    for k,p in pairs(I:GetAllSubConstructs()) do
+    local subs = I:GetAllSubConstructs();
+    for i = 1, #subs do
+      p = subs[i]
       if I:IsSpinBlock(p) and not ExcludedSpinners[p] then
         ClassifySpinner(I,p)
       end
@@ -1041,7 +1043,7 @@ function Initialize(I)
   PrintList(I,"RollSpinners",RollSpinners)
   PrintList(I,"PitchSpinners",PitchSpinners)
   PrintList(I,"YawSpinners",YawSpinners)
-  PrintList(I,"DownSpinners",DownSpinners)
+  PrintList(I,"HoverSpinners",HoverSpinners)
 
   I:Log("AI successfully initialized.")
 end
@@ -1075,7 +1077,7 @@ end
 -- Main update function. Everything starts here.
 function Update(I)
   GetAngleStats(I)
-  if not I:IsDocked() and WaterStartCheck(I) and (I.AIMode=='on' or I:GetNumberOfMainframes()==0) then
+  if not I:IsDocked() and WaterStartCheck(I) then
     Movement(I)
   else
     for k,p in pairs(AllSpinners) do I:SetSpinBlockRotationAngle(p,0) end

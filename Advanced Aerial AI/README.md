@@ -7,8 +7,6 @@ This AI also includes built-in water start AI, collision avoidance AI, "dogfight
 Put a Lua box down somewhere on your vehicle (it's in the "Control" tab of the build menu). Use "Q" on the Lua box. Copy-and-paste (Ctrl-A,Ctrl-C) the Lua code there into the big edit box in the Lua box. Read the documentation, below. Choose appropriate AI settings for your vehicle. Click "Apply" to save the code and new settings. Watch how your vehicle behaves and continue to tweak the AI settings as desired until you get the behavior you want.
 Note that when you paste this code in, you will only see a bit less than 500 lines of code because that's how many the Lua box can display. However, all the code should be there.
 
-The AI mainframe must be set to "On" for this AI to be enabled. Any other setting will allow the normal AI behaviors (allowing, for example, patrol mode to work).
-
 ## Frequently Asked Questions
 
 <details>
@@ -62,11 +60,9 @@ This AI does a lot of "thinking", potentially considering information about ever
 <summary>Where to find SubConstruct IDs?</summary>
 
 SubConstruct IDs are needed for the `HeliSpinners`, `VTSpinners`, `VTOLSpinners`, and `ExcludeSpinners` options.
-These IDs are attached to spinner blocks. You can find them in the lower-left hand corner of the Spinner GUI, as follows:
-
-<p align="center">
-<img src="http://i.imgur.com/P3bf6XT.jpg" alt="SubConstruct IDs" width="600"/>
-</p>
+These IDs are associated with to spinner blocks. When this AI is first initialized, it will print out lists of subconstruct IDs
+it thinks qualify for various roles (Hover, Yaw, Pitch, Roll). You can manually assign these to any role you like, or let
+the AI choose for itself.
 </details>
 
 ## BASIC OPTIONS
